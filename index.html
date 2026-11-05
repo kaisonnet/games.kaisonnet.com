@@ -89,6 +89,8 @@ nav.tabs button:focus-visible, .keys button:focus-visible { outline: 2px solid v
 #picToggle { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 6px; font-family: var(--f-term); font-size: 17px; letter-spacing: .06em; cursor: pointer; background: rgba(10, 13, 22, .8); color: var(--frost); border: 1px solid var(--line); padding: 0 8px; }
 #picbar.closed { padding-block: 2px; min-height: 26px; }
 #picbar.closed #picToggle { bottom: 2px; }
+#log .scene { margin: .4em 0 1em; }
+#log .scene canvas { display: block; width: 100%; max-width: 560px; aspect-ratio: 256 / 120; image-rendering: pixelated; image-rendering: crisp-edges; background: #000; border: 1px solid var(--line); cursor: pointer; }
 #picToggle:focus-visible { outline: 2px solid var(--sodium); outline-offset: 2px; }
 #log {
   font-size: 22px; line-height: 1.28;
@@ -375,7 +377,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <h3>MAP</h3>
       <p>The MAP tab draws your route automatically, one sheet per deck. A deck appears once you have set foot on it. Solid lines are paths you have used; dashed lines are exits you have seen but not taken yet. Tap a room to read its description again. The map keeps everything you have explored, even after RESTART. CLEAR MAP starts a fresh map from the room you are in.</p>
       <h3>PICTURES</h3>
-      <p>Fifteen key locations have a picture above the text, drawn line by line in the colours of the ZX Spectrum, like Melbourne House's The Hobbit (1982). Corridors and small rooms have none. By default a picture is drawn on your first visit and appears at once after that; tap it to finish drawing. HIDE folds the picture away. Under SETTINGS above you can switch pictures off or change how they appear; PICTURES ON / OFF works in the command line too.</p>
+      <p>Fifteen key locations have a picture above the text, and the title and both endings have one in the text, drawn line by line in the colours of the ZX Spectrum, like Melbourne House's The Hobbit (1982). Corridors and small rooms have none. By default a picture is drawn on your first visit and appears at once after that; tap it to finish drawing. HIDE folds the picture away. Under SETTINGS above you can switch pictures off or change how they appear; PICTURES ON / OFF works in the command line too.</p>
       <h3>SCRIPT</h3>
       <p>Like the old Infocom SCRIPT command, the game records your whole session: every command and every reply. It is on by default and survives RESTART and closing the page. Under SETTINGS, COPY SCRIPT puts it on the clipboard in the language you are reading, ready to paste anywhere. The end of the copy holds a short status line for evaluation.</p>
       <p>To leave a note for later, start a line with an asterisk: <code>* door command not understood</code>. The note goes into the script at exactly that spot, costs no move, and the game ignores it.</p>
@@ -407,7 +409,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <h3>KARTE</h3>
       <p>Der Reiter KARTE zeichnet deinen Weg automatisch mit, ein Blatt je Deck. Ein Deck erscheint, sobald du es zum ersten Mal betrittst. Durchgezogene Linien sind Wege, die du benutzt hast. Gestrichelte Linien sind Ausgänge, die du gesehen, aber noch nicht genommen hast. Tippe einen Raum an, um seine Beschreibung noch einmal zu lesen. Die Karte behält alles Erkundete, auch nach NEUSTART. KARTE LÖSCHEN beginnt eine neue Karte ab dem Raum, in dem du gerade stehst.</p>
       <h3>BILDER</h3>
-      <p>Fünfzehn wichtige Orte haben ein Bild über dem Text, Linie für Linie gezeichnet in den Farben des ZX Spectrum, wie in The Hobbit von Melbourne House (1982). Korridore und kleine Räume haben keins. Standardmäßig wird ein Bild beim ersten Besuch gezeichnet und erscheint danach sofort. Antippen beendet das Zeichnen. BILD ▲ klappt das Bild ein. Unter EINSTELLUNGEN oben schaltest du Bilder ab oder änderst, wie sie erscheinen. BILDER AN / AUS funktioniert auch in der Befehlszeile.</p>
+      <p>Fünfzehn wichtige Orte haben ein Bild über dem Text, Titel und beide Enden eins im Text, Linie für Linie gezeichnet in den Farben des ZX Spectrum, wie in The Hobbit von Melbourne House (1982). Korridore und kleine Räume haben keins. Standardmäßig wird ein Bild beim ersten Besuch gezeichnet und erscheint danach sofort. Antippen beendet das Zeichnen. BILD ▲ klappt das Bild ein. Unter EINSTELLUNGEN oben schaltest du Bilder ab oder änderst, wie sie erscheinen. BILDER AN / AUS funktioniert auch in der Befehlszeile.</p>
       <h3>SKRIPT</h3>
       <p>Wie der alte SCRIPT-Befehl bei Infocom zeichnet das Spiel deine ganze Sitzung auf: jeden Befehl und jede Antwort. Das Skript ist standardmäßig an und übersteht NEUSTART und das Schließen der Seite. Unter EINSTELLUNGEN legt SKRIPT KOPIEREN es in der Sprache, die du gerade liest, in die Zwischenablage, bereit zum Einfügen. Am Ende der Kopie steht eine kurze Statuszeile für die Auswertung.</p>
       <p>Für eine Notiz beginnst du die Zeile mit einem Sternchen: <code>* Tür-Befehl nicht verstanden</code>. Die Notiz landet genau an dieser Stelle im Skript, kostet keinen Zug, und das Spiel ignoriert sie.</p>
@@ -1407,6 +1409,7 @@ function createGame(io) {
           "Du legst dich auf die achte Liege. Sie ist warm, als hätte jemand sie für dich freigehalten.\n\nDas Summen drängt dich nicht. Es wartet, bis du aufhörst, dich zu wehren, und dann öffnet es sich wie eine Tür. Hale ist da, jünger, und lacht über etwas, das Mira gesagt hat. Sato liest in einem Garten, der nach Regen riecht. Deine Mutter ruft dich zum Abendessen, und du gehst, weil du ihre Stimme seit elf Jahren nicht gehört hast.\n\nÜber der Kuppel wird Tethra-7 langsam größer. Niemand stört sich daran."), 'win');
     say(L("Forty years later, the radio telescopes on Earth pick up a new signal from Tethra-7. The old tone is still there, rising and falling. But now it has company: eight more voices, humming along.",
           "Vierzig Jahre später fangen die Radioteleskope auf der Erde ein neues Signal von Tethra-7 auf. Der alte Ton ist noch da, steigt und fällt. Aber jetzt hat er Gesellschaft: acht weitere Stimmen, die mitsummen."), 'print');
+    io.scene && io.scene('dream');
     say(L("*** YOU HAVE CHOSEN THE DREAM ***", "*** DU HAST DEN TRAUM GEWÄHLT ***"), 'banner');
     s.over = 'dream';
     score();
@@ -1416,6 +1419,7 @@ function createGame(io) {
   function die() {
     say(L("Your bare fingers close around the Lattice.\n\nThe hum stops being a sound and becomes a place. It's warm here. Captain Hale is here, and Sato, and Ito, and everyone, and they're so glad you came. Somewhere a girl is blowing out candles. You lie down on the eighth couch.\n\nYou don't get up. Far below, Tethra-7 opens its arms to the Halcyon.",
           "Deine bloßen Finger schließen sich um das Gitter.\n\nDas Summen hört auf, ein Geräusch zu sein, und wird ein Ort. Es ist warm hier. Kapitän Hale ist hier, und Sato, und Ito, und alle anderen, und sie freuen sich so, dass du gekommen bist. Irgendwo bläst ein Mädchen Kerzen aus. Du legst dich auf die achte Liege.\n\nDu stehst nicht mehr auf. Tief unten öffnet Tethra-7 der Halcyon die Arme."), 'alert');
+    io.scene && io.scene('dream');
     say(L("*** YOU HAVE JOINED THE DREAM ***", "*** DU BIST TEIL DES TRAUMS GEWORDEN ***"), 'banner');
     s.over = 'dead';
     score();
@@ -1427,6 +1431,7 @@ function createGame(io) {
     award('home');
     say(L("The key turns. Deep in the stern, the main engines catch with a roar that you feel in your teeth, in a good way this time. On the viewscreen, Tethra-7 tilts, slides, and begins to fall away.\n\nCaptain Hale lowers himself into the command chair beside you. He watches the moon shrink for a long time. 'Sato says we'll all have nightmares,' he says at last. 'I think I'd like a nightmare. They're ours.'\n\nBehind you, the crew are laughing at something. Someone has found the coffee.\n\nAhead, a small yellow star.",
           "Der Schlüssel dreht sich. Tief im Heck zünden die Haupttriebwerke mit einem Dröhnen, das du in den Zähnen spürst, diesmal auf gute Weise. Auf dem Hauptschirm kippt Tethra-7, gleitet zur Seite und fällt zurück.\n\nKapitän Hale lässt sich neben dir in den Kommandosessel sinken. Lange sieht er zu, wie der Mond schrumpft. „Sato sagt, wir werden alle Albträume haben“, sagt er schließlich. „Ich glaube, ich hätte gern einen Albtraum. Die gehören wenigstens uns.“\n\nHinter dir lacht die Crew über irgendetwas. Jemand hat den Kaffee gefunden.\n\nVor euch: ein kleiner gelber Stern."), 'win');
+    io.scene && io.scene('home');
     say(L("*** THE HALCYON IS GOING HOME ***", "*** DIE HALCYON FLIEGT NACH HAUSE ***"), 'banner');
     s.over = 'won';
     score();
@@ -1629,9 +1634,10 @@ function createGame(io) {
     if (restart && io.restarted) io.restarted();
     if (restart) say(L("[Restarting.]", "[Neustart.]"), 'sys');
     say(L("THE EIGHTH SLEEPER", "DER ACHTE SCHLÄFER"), 'title');
+    io.scene && io.scene('title');
     say(L("Idea and concept: Kai Sonnet, 2026 · built with Claude", "Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude"), 'sys');
-    say(L("An Interactive Science Fiction\nRelease 11 / Serial number 261105\nType HELP if you're stuck on how to play, HINT if you're stuck on what to do.",
-          "Eine interaktive Science-Fiction-Geschichte\nRelease 11 / Seriennummer 261105\nTippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
+    say(L("An Interactive Science Fiction\nRelease 12 / Serial number 261105\nType HELP if you're stuck on how to play, HINT if you're stuck on what to do.",
+          "Eine interaktive Science-Fiction-Geschichte\nRelease 12 / Seriennummer 261105\nTippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
     say(L("Your pod's lid lifts with a hiss and a gust of frost. A recorded voice says, 'Battery failure. Emergency revival complete. Welcome back, Engineer Corrigan.' Nobody else says anything at all.\n\nYou climb out shivering. The deck is cold. The ship is quiet in the wrong way.",
           "Der Deckel deiner Kapsel hebt sich mit einem Zischen und einem Schwall Frost. Eine aufgezeichnete Stimme sagt: „Batterieausfall. Notfallerweckung abgeschlossen. Willkommen zurück, Ingenieur Corrigan.“ Sonst sagt niemand etwas.\n\nZitternd kletterst du heraus. Der Boden ist kalt. Das Schiff ist auf die falsche Art still."));
     describe();
@@ -2271,7 +2277,7 @@ Object.assign(PICS, {
     const p = Pic(0);
     // the glass dome, open to the stars
     stars(p, 55, 70, [6, 4, 250, 96]);
-    moon(p, 196, 38, 22, 8, null, 3);
+    if (s.dreamAll) moon(p, 128, 150, 120, 8, [6, 4, 250, 99]); else moon(p, 196, 38, 22, 8, null, 3);
     const frame = 13;
     p.ellipse(frame, 128, 100, 127, 96, Math.PI, Math.PI * 2);
     for (const rx of [86, 44]) p.ellipse(frame, 128, 100, rx, 96, Math.PI, Math.PI * 2);
@@ -2289,7 +2295,7 @@ Object.assign(PICS, {
       const q = [c.x - w, c.y, c.x + w, c.y, c.x + w * 0.8, c.y - h, c.x - w * 0.8, c.y - h];
       p.poly(5, ...q); p.pf([5, 1], ...q);
       p.pf([1, 1], c.x - w, c.y, c.x + w, c.y, c.x + w, c.y + 2 * sc, c.x - w, c.y + 2 * sc);
-      if (!s.ejected && c.i !== emptyIdx) {
+      if (!s.ejected && (c.i !== emptyIdx || s.dreamAll)) {
         p.pf([7, 7], c.x - w * 0.45, c.y - h - 3 * sc, c.x + w * 0.75, c.y - h - 2 * sc, c.x + w * 0.75, c.y - h + 1, c.x - w * 0.45, c.y - h + 1);
         p.disc([15, 15], c.x - w * 0.62, c.y - h - 2 * sc, 3 * sc, 2.6 * sc);
       }
@@ -2301,6 +2307,51 @@ Object.assign(PICS, {
       p.pf([15, 13], ...lat); p.dpoly(15, ...lat); p.dpoly(13, 128, 62, 133, 68, 128, 74, 123, 68);
       for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; p.dline(13, 128 + Math.cos(a) * 14, 67 + Math.sin(a) * 14, 128 + Math.cos(a) * 20, 67 + Math.sin(a) * 20); }
     }
+    return p;
+  },
+});
+
+// ---- title and ending scenes ----------------------------------------------------
+// The Halcyon in side view: engines left, spine, habitation ring, command section with the dome on the right.
+function ship(p, ox, oy, k, flame) {
+  const T = pts => pts.map((v, i) => (i % 2 ? oy + v * k : ox + v * k));
+  const part = (cc, ink, pts) => { const q = T(pts); p.poly(ink, ...q); p.pf(cc, ...q); };
+  if (flame) {
+    p.pf([14, 10], ...T([-34, -6, -6, -4, -6, 4, -34, 6, -26, 0]));
+    p.pf([15, 14], ...T([-20, -3, -6, -2, -6, 2, -20, 3]));
+  }
+  part([7, 1], 5, [-6, -9, 14, -9, 14, 9, -6, 9]);                 // engine block
+  part([1, 0], 5, [-12, -6, -6, -4, -6, 4, -12, 6]);              // nozzle
+  part([7, 7], 5, [14, -3, 120, -3, 120, 3, 14, 3]);               // spine
+  part([15, 7], 5, [120, -8, 146, -8, 152, -3, 152, 6, 120, 6]);   // command section
+  const c = T([134, -8]); p.disc([13, 5], c[0], c[1], 8 * k, 6 * k, Math.PI, Math.PI * 2); p.ellipse(5, c[0], c[1], 8 * k, 6 * k, Math.PI, Math.PI * 2); // dome
+  const m = T([128, -14, 128, -26]); p.line(5, ...m); p.dot(13, m[2], m[3]);  // sensor mast
+  const r = T([70, 0]);                                              // habitation ring, seen almost edge-on
+  p.ellipse(5, r[0], r[1], 7 * k, 24 * k); p.ellipse(5, r[0], r[1], 4 * k, 20 * k);
+  p.pf([7, 1], ...p.ellPts(r[0], r[1], 7 * k, 24 * k, 0, Math.PI * 2, 40));
+  p.disc([0, 0], r[0], r[1], 4 * k, 20 * k);
+  for (const x of [30, 46, 96, 108]) { const q = T([x, -3, x, 3]); p.dline(1, ...q); }
+}
+Object.assign(PICS, {
+  title() {
+    const p = Pic(0);
+    stars(p, 71, 90, [0, 0, 256, 120]);
+    moon(p, 214, 132, 96, 3);
+    p.dellipse(6, 170, 112, 160, 36, Math.PI * 1.04, Math.PI * 1.47);  // the decaying orbit, passing below the ship
+    ship(p, 46, 46, 1, false);
+    return p;
+  },
+  home() {
+    const p = Pic(0);
+    stars(p, 72, 80, [0, 0, 256, 120]);
+    moon(p, 22, 112, 30, 6, null, 3);                                  // Tethra-7, falling behind
+    p.disc([14, 15], 226, 22, 5, 5);                                   // a small yellow star
+    for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; p.dline(14, 226 + Math.cos(a) * 8, 22 + Math.sin(a) * 8, 226 + Math.cos(a) * 12, 22 + Math.sin(a) * 12); }
+    ship(p, 92, 70, 0.85, true);
+    return p;
+  },
+  dream() {
+    const p = PICS.obsDome({ dreamAll: true });
     return p;
   },
 });
@@ -2362,8 +2413,8 @@ function pictureFor(room, s) {
     const ids = ORDER.map((k, i) => (st.scored[k] ? i + 1 : null)).filter(Boolean).join(',');
     const now = new Date();
     const head = lang === 'de'
-      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 11 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
-      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 11 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
+      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 12 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
+      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 12 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
     const body = scriptLog.map(([c, en, de]) => {
       const txt = lang === 'de' && de !== undefined ? de : en;
       if (c === 'cmd') return '\n> ' + txt;
@@ -2618,6 +2669,19 @@ function pictureFor(room, s) {
   }
   picCv.addEventListener('click', () => picFinish && picFinish());
   picToggle.addEventListener('click', () => { opts.picOpen = !opts.picOpen; saveOpts(); updatePic(true); });
+  const SCENE_LABEL = { title: { en: 'The Halcyon in orbit above Tethra-7', de: 'Die Halcyon im Orbit über Tethra-7' }, home: { en: 'The Halcyon leaves Tethra-7 behind', de: 'Die Halcyon lässt Tethra-7 hinter sich' }, dream: { en: 'Eight sleepers in the dome', de: 'Acht Schläfer in der Kuppel' } };
+  io.scene = name => {
+    if (!opts.pics || !PICS[name]) return;
+    const box = document.createElement('div'); box.className = 'scene';
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 120;
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', SCENE_LABEL[name][lang]);
+    box.appendChild(cv); log.appendChild(box);
+    const key = 'scene:' + name;
+    const instant = reduceMotion || opts.picMode === 'instant' || (opts.picMode === 'first' && picSeen.has(key));
+    if (!picSeen.has(key)) { picSeen.add(key); savePicSeen(); }
+    const fin = drawPic(cv, compile(PICS[name]({})), { instant, ms: 6000, weights: PACE });
+    cv.addEventListener('click', e => { e.stopPropagation(); fin(); });
+  };
   io.restarted = () => { picSeen = new Set(); savePicSeen(); picShown = null; };
   function setPics(on, announce) {
     opts.pics = on; saveOpts(); applyOpts(); updatePic(true);
