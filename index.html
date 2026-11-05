@@ -65,6 +65,8 @@ body::before {
 .status .where { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .status .deck { opacity: .65; margin-left: 8px; }
 .status .nums { white-space: nowrap; }
+.status .ls { display: none; }
+@media (max-width: 480px) { .status .lw, .status .deck { display: none; } .status .ls { display: inline; } }
 nav.tabs {
   display: flex; gap: 2px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -79,6 +81,15 @@ nav.tabs button {
 nav.tabs button[aria-selected="true"] { color: var(--ice); border-bottom-color: var(--sodium); }
 nav.tabs button:focus-visible, .keys button:focus-visible { outline: 2px solid var(--sodium); outline-offset: 2px; }
 .panel { flex: 1; min-height: 0; overflow-y: auto; }
+#play { display: flex; flex-direction: column; overflow: hidden; }
+#logwrap { flex: 1; min-height: 0; overflow-y: auto; }
+#picbar { flex: none; position: relative; background: #000; border-bottom: 1px solid var(--line); padding-block: 6px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#picbar canvas { display: block; margin: 0 auto; width: 100%; max-width: calc(34vh * 256 / 120); aspect-ratio: 256 / 120; image-rendering: pixelated; image-rendering: crisp-edges; cursor: pointer; }
+#picbar.closed canvas { display: none; }
+#picToggle { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 6px; font-family: var(--f-term); font-size: 17px; letter-spacing: .06em; cursor: pointer; background: rgba(10, 13, 22, .8); color: var(--frost); border: 1px solid var(--line); padding: 0 8px; }
+#picbar.closed { padding-block: 2px; min-height: 26px; }
+#picbar.closed #picToggle { bottom: 2px; }
+#picToggle:focus-visible { outline: 2px solid var(--sodium); outline-offset: 2px; }
 #log {
   font-size: 22px; line-height: 1.28;
   padding-block: 14px 24px;
@@ -232,7 +243,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
 <div class="app">
   <header class="status" aria-live="off">
     <span class="where"><span id="room">Cryo Bay</span><span class="deck" id="deck">Deck C</span></span>
-    <span class="nums"><span data-l="en">Score</span><span data-l="de">Punkte</span> <span id="score">0</span>/100 &nbsp; <span data-l="en">Moves</span><span data-l="de">Züge</span> <span id="moves">0</span><span id="orbitWrap" hidden> &nbsp; &#9660;<span id="alt">220</span> km</span></span>
+    <span class="nums"><span class="lw" data-l="en">Score </span><span class="lw" data-l="de">Punkte </span><span id="score">0</span>/100 &nbsp; <span class="lw" data-l="en">Moves </span><span class="lw" data-l="de">Züge </span><span class="ls" data-l="en">M&#8239;</span><span class="ls" data-l="de">Z&#8239;</span><span id="moves">0</span><span id="orbitWrap" hidden> &nbsp; &#9660;<span id="alt">220</span> km</span></span>
   </header>
   <nav class="tabs" role="tablist">
     <button role="tab" aria-selected="true" data-panel="play">TERMINAL</button>
@@ -244,7 +255,10 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
     </div>
   </nav>
 
-  <main class="panel" id="play"><div id="log" aria-live="polite"></div></main>
+  <main class="panel" id="play">
+    <div id="picbar" hidden><canvas id="pic" width="256" height="120" aria-label="Location picture"></canvas><button type="button" id="picToggle" aria-expanded="true"><span data-l="en">HIDE &#9650;</span><span data-l="de">BILD &#9650;</span></button></div>
+    <div id="logwrap"><div id="log" aria-live="polite"></div></div>
+  </main>
 
   <section class="panel" id="map" hidden>
     <div class="mapwrap">
@@ -307,6 +321,20 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
         </div>
       </div>
       <div class="setrow">
+        <div class="what"><span data-l="en">Pictures</span><span data-l="de">Bilder</span>
+          <small><span data-l="en">Pictures of 15 key locations above the text, drawn line by line like The Hobbit (1982).</span><span data-l="de">Bilder von 15 wichtigen Orten über dem Text, Linie für Linie gezeichnet wie in The Hobbit (1982).</span></small></div>
+        <div class="seg" id="optPics" role="group" aria-label="Pictures">
+          <button type="button" data-v="on"><span data-l="en">ON</span><span data-l="de">AN</span></button><button type="button" data-v="off"><span data-l="en">OFF</span><span data-l="de">AUS</span></button>
+        </div>
+      </div>
+      <div class="setrow">
+        <div class="what"><span data-l="en">Drawing</span><span data-l="de">Zeichnen</span>
+          <small><span data-l="en">How pictures appear: always drawn (about 6 seconds), drawn on the first visit only, or shown at once. Tapping a picture finishes it.</span><span data-l="de">Wie Bilder erscheinen: immer gezeichnet (etwa 6 Sekunden), nur beim ersten Besuch gezeichnet oder sofort da. Antippen beendet das Zeichnen.</span></small></div>
+        <div class="seg" id="optPicMode" role="group" aria-label="Drawing">
+          <button type="button" data-v="draw"><span data-l="en">DRAW</span><span data-l="de">ZEICHNEN</span></button><button type="button" data-v="first"><span data-l="en">FIRST VISIT</span><span data-l="de">ERSTER BESUCH</span></button><button type="button" data-v="instant"><span data-l="en">AT ONCE</span><span data-l="de">SOFORT</span></button>
+        </div>
+      </div>
+      <div class="setrow">
         <div class="what"><span data-l="en">Script</span><span data-l="de">Skript</span>
           <small><span data-l="en">Records every command and every reply, across restarts. Copy it and paste it into a chat or a note.</span><span data-l="de">Zeichnet jeden Befehl und jede Antwort auf, auch über Neustarts hinweg. Kopiere es und füge es in einen Chat oder eine Notiz ein.</span> <span id="scriptCount"></span></small></div>
         <div class="seg" id="optScript" role="group" aria-label="Script">
@@ -346,6 +374,8 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Switch between German and English at any time with the DE / EN buttons. The whole transcript changes language, so you can reread anything. To check a single passage, tap it: it flips to the other language. Tap it again to flip it back.</p>
       <h3>MAP</h3>
       <p>The MAP tab draws your route automatically, one sheet per deck. A deck appears once you have set foot on it. Solid lines are paths you have used; dashed lines are exits you have seen but not taken yet. Tap a room to read its description again. The map keeps everything you have explored, even after RESTART. CLEAR MAP starts a fresh map from the room you are in.</p>
+      <h3>PICTURES</h3>
+      <p>Fifteen key locations have a picture above the text, drawn line by line in the colours of the ZX Spectrum, like Melbourne House's The Hobbit (1982). Corridors and small rooms have none. By default a picture is drawn on your first visit and appears at once after that; tap it to finish drawing. HIDE folds the picture away. Under SETTINGS above you can switch pictures off or change how they appear; PICTURES ON / OFF works in the command line too.</p>
       <h3>SCRIPT</h3>
       <p>Like the old Infocom SCRIPT command, the game records your whole session: every command and every reply. It is on by default and survives RESTART and closing the page. Under SETTINGS, COPY SCRIPT puts it on the clipboard in the language you are reading, ready to paste anywhere. The end of the copy holds a short status line for evaluation.</p>
       <p>To leave a note for later, start a line with an asterisk: <code>* door command not understood</code>. The note goes into the script at exactly that spot, costs no move, and the game ignores it.</p>
@@ -376,6 +406,8 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Mit den Tasten DE / EN wechselst du jederzeit zwischen Deutsch und Englisch. Das gesamte bisherige Protokoll wechselt die Sprache, du kannst also alles noch einmal lesen. Um nur eine Stelle zu prüfen, tippe sie an: Sie erscheint in der anderen Sprache. Ein zweites Antippen stellt sie zurück.</p>
       <h3>KARTE</h3>
       <p>Der Reiter KARTE zeichnet deinen Weg automatisch mit, ein Blatt je Deck. Ein Deck erscheint, sobald du es zum ersten Mal betrittst. Durchgezogene Linien sind Wege, die du benutzt hast. Gestrichelte Linien sind Ausgänge, die du gesehen, aber noch nicht genommen hast. Tippe einen Raum an, um seine Beschreibung noch einmal zu lesen. Die Karte behält alles Erkundete, auch nach NEUSTART. KARTE LÖSCHEN beginnt eine neue Karte ab dem Raum, in dem du gerade stehst.</p>
+      <h3>BILDER</h3>
+      <p>Fünfzehn wichtige Orte haben ein Bild über dem Text, Linie für Linie gezeichnet in den Farben des ZX Spectrum, wie in The Hobbit von Melbourne House (1982). Korridore und kleine Räume haben keins. Standardmäßig wird ein Bild beim ersten Besuch gezeichnet und erscheint danach sofort. Antippen beendet das Zeichnen. BILD ▲ klappt das Bild ein. Unter EINSTELLUNGEN oben schaltest du Bilder ab oder änderst, wie sie erscheinen. BILDER AN / AUS funktioniert auch in der Befehlszeile.</p>
       <h3>SKRIPT</h3>
       <p>Wie der alte SCRIPT-Befehl bei Infocom zeichnet das Spiel deine ganze Sitzung auf: jeden Befehl und jede Antwort. Das Skript ist standardmäßig an und übersteht NEUSTART und das Schließen der Seite. Unter EINSTELLUNGEN legt SKRIPT KOPIEREN es in der Sprache, die du gerade liest, in die Zwischenablage, bereit zum Einfügen. Am Ende der Kopie steht eine kurze Statuszeile für die Auswertung.</p>
       <p>Für eine Notiz beginnst du die Zeile mit einem Sternchen: <code>* Tür-Befehl nicht verstanden</code>. Die Notiz landet genau an dieser Stelle im Skript, kostet keinen Zug, und das Spiel ignoriert sie.</p>
@@ -1365,8 +1397,8 @@ function createGame(io) {
   }
 
   function help() {
-    say(L("HOW TO PLAY\nType short commands of one or two words: a verb and a noun. You can type in English or German.\n\nMove: NORTH, SOUTH, EAST, WEST, UP, DOWN, IN, OUT (or N, S, E, W, U, D).\nLook around: LOOK (L). Look at something: EXAMINE LOCKER (X LOCKER).\nItems: TAKE, DROP, OPEN, CLOSE, READ, WEAR, REMOVE, PUT X IN Y.\nMachines: TURN ON FLASHLIGHT, TURN VALVE, PUSH BUTTON, TYPE 1234.\nPeople: TALK TO ORACLE.\nOther: INVENTORY (I), SCORE, WAIT (Z), HINT, UNDO, RESTART.\nSaving: SAVE 1-3, RESTORE 1-3, SAVES lists the slots.\nNotes: a line starting with * goes into the script as a note.\nShortcuts: AGAIN (G) repeats your last command. IT means the last thing you named. Chain commands: TAKE LAMP AND TURN IT ON.\nSettings: ORBIT OFF / RELAXED / NORMAL / TIGHT (time pressure), MAP ON / OFF, SCRIPT ON / OFF.",
-          "SO WIRD GESPIELT\nGib kurze Befehle aus ein oder zwei Wörtern ein: ein Verb und ein Hauptwort. Du kannst Deutsch oder Englisch tippen.\n\nBewegen: NORDEN, SÜDEN, OSTEN, WESTEN, HOCH, RUNTER, REIN, RAUS (oder N, S, O, W, H, R).\nUmsehen: SCHAU (L). Etwas genauer ansehen: UNTERSUCHE SPIND (X SPIND).\nGegenstände: NIMM, LEG AB, ÖFFNE, SCHLIESS, LIES, ZIEH AN, ZIEH AUS, LEG X IN Y.\nMaschinen: SCHALTE LAMPE EIN, DREH VENTIL, DRÜCK KNOPF, TIPPE 1234.\nPersonen: SPRICH MIT ORACLE.\nSonstiges: INVENTAR (I), PUNKTE, WARTE (Z), TIPP, ZURÜCK, NEUSTART.\nSpeichern: SPEICHERN 1-3, LADEN 1-3, SPIELSTÄNDE zeigt die Plätze.\nNotizen: Eine Zeile mit * am Anfang landet als Notiz im Skript.\nAbkürzungen: NOCHMAL (G) wiederholt den letzten Befehl. ES meint das zuletzt genannte Ding. Befehle verketten: NIMM LAMPE UND SCHALTE SIE EIN.\nEinstellungen: ORBIT AUS / ENTSPANNT / NORMAL / KNAPP (Zeitdruck), KARTE AN / AUS, SKRIPT AN / AUS."), 'print');
+    say(L("HOW TO PLAY\nType short commands of one or two words: a verb and a noun. You can type in English or German.\n\nMove: NORTH, SOUTH, EAST, WEST, UP, DOWN, IN, OUT (or N, S, E, W, U, D).\nLook around: LOOK (L). Look at something: EXAMINE LOCKER (X LOCKER).\nItems: TAKE, DROP, OPEN, CLOSE, READ, WEAR, REMOVE, PUT X IN Y.\nMachines: TURN ON FLASHLIGHT, TURN VALVE, PUSH BUTTON, TYPE 1234.\nPeople: TALK TO ORACLE.\nOther: INVENTORY (I), SCORE, WAIT (Z), HINT, UNDO, RESTART.\nSaving: SAVE 1-3, RESTORE 1-3, SAVES lists the slots.\nNotes: a line starting with * goes into the script as a note.\nShortcuts: AGAIN (G) repeats your last command. IT means the last thing you named. Chain commands: TAKE LAMP AND TURN IT ON.\nSettings: ORBIT OFF / RELAXED / NORMAL / TIGHT (time pressure), MAP ON / OFF, SCRIPT ON / OFF, PICTURES ON / OFF.",
+          "SO WIRD GESPIELT\nGib kurze Befehle aus ein oder zwei Wörtern ein: ein Verb und ein Hauptwort. Du kannst Deutsch oder Englisch tippen.\n\nBewegen: NORDEN, SÜDEN, OSTEN, WESTEN, HOCH, RUNTER, REIN, RAUS (oder N, S, O, W, H, R).\nUmsehen: SCHAU (L). Etwas genauer ansehen: UNTERSUCHE SPIND (X SPIND).\nGegenstände: NIMM, LEG AB, ÖFFNE, SCHLIESS, LIES, ZIEH AN, ZIEH AUS, LEG X IN Y.\nMaschinen: SCHALTE LAMPE EIN, DREH VENTIL, DRÜCK KNOPF, TIPPE 1234.\nPersonen: SPRICH MIT ORACLE.\nSonstiges: INVENTAR (I), PUNKTE, WARTE (Z), TIPP, ZURÜCK, NEUSTART.\nSpeichern: SPEICHERN 1-3, LADEN 1-3, SPIELSTÄNDE zeigt die Plätze.\nNotizen: Eine Zeile mit * am Anfang landet als Notiz im Skript.\nAbkürzungen: NOCHMAL (G) wiederholt den letzten Befehl. ES meint das zuletzt genannte Ding. Befehle verketten: NIMM LAMPE UND SCHALTE SIE EIN.\nEinstellungen: ORBIT AUS / ENTSPANNT / NORMAL / KNAPP (Zeitdruck), KARTE AN / AUS, SKRIPT AN / AUS, BILDER AN / AUS."), 'print');
   }
 
   function dream() {
@@ -1594,11 +1626,12 @@ function createGame(io) {
 
   function start(restart) {
     s = fresh(); undo = [];
+    if (restart && io.restarted) io.restarted();
     if (restart) say(L("[Restarting.]", "[Neustart.]"), 'sys');
     say(L("THE EIGHTH SLEEPER", "DER ACHTE SCHLÄFER"), 'title');
     say(L("Idea and concept: Kai Sonnet, 2026 · built with Claude", "Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude"), 'sys');
-    say(L("An Interactive Science Fiction\nRelease 10 / Serial number 261025\nType HELP if you're stuck on how to play, HINT if you're stuck on what to do.",
-          "Eine interaktive Science-Fiction-Geschichte\nRelease 10 / Seriennummer 261025\nTippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
+    say(L("An Interactive Science Fiction\nRelease 11 / Serial number 261105\nType HELP if you're stuck on how to play, HINT if you're stuck on what to do.",
+          "Eine interaktive Science-Fiction-Geschichte\nRelease 11 / Seriennummer 261105\nTippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
     say(L("Your pod's lid lifts with a hiss and a gust of frost. A recorded voice says, 'Battery failure. Emergency revival complete. Welcome back, Engineer Corrigan.' Nobody else says anything at all.\n\nYou climb out shivering. The deck is cold. The ship is quiet in the wrong way.",
           "Der Deckel deiner Kapsel hebt sich mit einem Zischen und einem Schwall Frost. Eine aufgezeichnete Stimme sagt: „Batterieausfall. Notfallerweckung abgeschlossen. Willkommen zurück, Ingenieur Corrigan.“ Sonst sagt niemand etwas.\n\nZitternd kletterst du heraus. Der Boden ist kalt. Das Schiff ist auf die falsche Art still."));
     describe();
@@ -1623,22 +1656,679 @@ function createGame(io) {
     roomInfo: id => ({ name: R[id].name, desc: R[id].desc() }),
     state: () => s,
     rooms: R, items: I,
+    lit: () => lightHere(),
   };
 }
 if (typeof module !== 'undefined') module.exports = { createGame };
 
 </script>
 <script>
+// ZX-Spectrum-style location pictures: outlines first, then flood fills, drawn while you watch.
+const SPEC = [
+  [0, 0, 0], [0, 0, 215], [215, 0, 0], [215, 0, 215], [0, 215, 0], [0, 215, 215], [215, 215, 0], [215, 215, 215],
+  [0, 0, 0], [0, 0, 255], [255, 0, 0], [255, 0, 255], [0, 255, 0], [0, 255, 255], [255, 255, 0], [255, 255, 255],
+];
+const PW = 256, PH = 120;
+// drawing pace per pixel kind: [outline, fill, dot]. Outlines slow, so you watch the picture being constructed.
+const PACE = [8, 0.8, 3];
+const PACE_OLD = [5, 1, 3];
+
+// ---- picture builder: ops are recorded, then rendered into a list of pixel writes
+function Pic(paper) {
+  const O = [], F = [], D = [];
+  const seg = (arr, c, pts) => { for (let i = 0; i + 3 < pts.length; i += 2) arr.push(['l', c, pts[i], pts[i + 1], pts[i + 2], pts[i + 3]]); };
+  const ell = (cx, cy, rx, ry, a0, a1, n) => { const pts = []; n = n || Math.max(12, Math.round((rx + ry) * Math.abs(a1 - a0) / 6)); for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; pts.push(cx + rx * Math.cos(a), cy + ry * Math.sin(a)); } return pts; };
+  return {
+    paper,
+    get ops() { return O.concat(F, D); },
+    // outlines (drawn first, protected from area fills)
+    line(c, ...pts) { seg(O, c, pts); return this; },
+    poly(c, ...pts) { seg(O, c, pts.concat(pts[0], pts[1])); return this; },
+    rect(c, x0, y0, x1, y1) { return this.poly(c, x0, y0, x1, y0, x1, y1, x0, y1); },
+    ellipse(c, cx, cy, rx, ry, a0, a1) { seg(O, c, ell(cx, cy, rx, ry, a0 === undefined ? 0 : a0, a1 === undefined ? Math.PI * 2 : a1)); return this; },
+    // area fills (second phase): flood fill or polygon fill with optional two-colour dither
+    fill(c, x, y, c2) { F.push(['f', c, Math.round(x), Math.round(y), c2 === undefined ? c : c2]); return this; },
+    pf(cc, ...pts) { const [c1, c2] = Array.isArray(cc) ? cc : [cc, cc]; F.push(['pf', c1, c2, pts]); return this; },
+    disc(cc, cx, cy, rx, ry, a0, a1) { const pts = ell(cx, cy, rx, ry, a0 === undefined ? 0 : a0, a1 === undefined ? Math.PI * 2 : a1); return this.pf(cc, ...pts); },
+    // details (last phase): drawn over everything
+    dot(c, x, y) { D.push(['d', c, Math.round(x), Math.round(y)]); return this; },
+    dline(c, ...pts) { seg(D, c, pts); return this; },
+    dpoly(c, ...pts) { seg(D, c, pts.concat(pts[0], pts[1])); return this; },
+    dellipse(c, cx, cy, rx, ry, a0, a1) { seg(D, c, ell(cx, cy, rx, ry, a0 === undefined ? 0 : a0, a1 === undefined ? Math.PI * 2 : a1)); return this; },
+    ellPts: ell,
+  };
+}
+
+// Render ops into a pixel-write program (index + colour), simulating the screen as it goes.
+function compile(pic) {
+  const buf = new Uint8Array(PW * PH).fill(pic.paper);
+  const idx = [], col = [], kind = [];
+  const mask = new Uint8Array(PW * PH);
+  const put = (x, y, c, w) => {
+    if (x < 0 || y < 0 || x >= PW || y >= PH) return;
+    const i = y * PW + x;
+    if (w === 0) mask[i] = 1;
+    if (buf[i] === c) return;
+    buf[i] = c; idx.push(i); col.push(c); kind.push(w);
+  };
+  for (const op of pic.ops) {
+    if (op[0] === 'l') {
+      let [, c, x0, y0, x1, y1] = op;
+      x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+      const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+      let err = dx + dy;
+      for (;;) {
+        put(x0, y0, c, 0);
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+      }
+    } else if (op[0] === 'pf') {
+      const [, c1, c2, pts] = op;
+      const ys = []; for (let i = 1; i < pts.length; i += 2) ys.push(pts[i]);
+      const y0 = Math.max(0, Math.ceil(Math.min(...ys))), y1 = Math.min(PH - 1, Math.floor(Math.max(...ys)));
+      const m = pts.length / 2;
+      for (let y = y0; y <= y1; y++) {
+        const yc = y + 0.5, xs = [];
+        for (let i = 0; i < m; i++) {
+          const ax = pts[2 * i], ay = pts[2 * i + 1], bx = pts[(2 * i + 2) % pts.length], by = pts[(2 * i + 3) % pts.length];
+          if ((ay <= yc && by > yc) || (by <= yc && ay > yc)) xs.push(ax + (yc - ay) * (bx - ax) / (by - ay));
+        }
+        xs.sort((a, b) => a - b);
+        for (let j = 0; j + 1 < xs.length; j += 2) {
+          for (let x = Math.max(0, Math.round(xs[j])); x <= Math.min(PW - 1, Math.round(xs[j + 1]) - 1); x++) {
+            if (mask[y * PW + x]) continue;
+            put(x, y, (x + y) % 2 ? c2 : c1, 1);
+          }
+        }
+      }
+    } else if (op[0] === 'd') {
+      put(op[2], op[3], op[1], 2);
+    } else if (op[0] === 'f') {
+      const [, c1, sx0, sy0, c2] = op;
+      if (sx0 < 0 || sy0 < 0 || sx0 >= PW || sy0 >= PH) continue;
+      const target = buf[sy0 * PW + sx0];
+      if (target === c1 && target === c2) continue;
+      // scanline flood fill; collect the region first, then write it top to bottom like the old machines
+      const seen = new Uint8Array(PW * PH), region = [];
+      const stack = [[sx0, sy0]];
+      while (stack.length) {
+        let [x, y] = stack.pop();
+        while (x >= 0 && buf[y * PW + x] === target && !seen[y * PW + x]) x--;
+        x++;
+        let up = false, dn = false;
+        while (x < PW && buf[y * PW + x] === target && !seen[y * PW + x]) {
+          seen[y * PW + x] = 1; region.push(y * PW + x);
+          if (y > 0) { const a = buf[(y - 1) * PW + x] === target && !seen[(y - 1) * PW + x]; if (a && !up) { stack.push([x, y - 1]); up = true; } else if (!a) up = false; }
+          if (y < PH - 1) { const b = buf[(y + 1) * PW + x] === target && !seen[(y + 1) * PW + x]; if (b && !dn) { stack.push([x, y + 1]); dn = true; } else if (!b) dn = false; }
+          x++;
+        }
+      }
+      region.sort((p, q) => p - q);
+      for (const i of region) { const x = i % PW, y = (i / PW) | 0; put(x, y, (x + y) % 2 ? c2 : c1, 1); }
+    }
+  }
+  return { paper: pic.paper, idx: Int32Array.from(idx), col: Uint8Array.from(col), kind: Uint8Array.from(kind) };
+}
+
+// Draw a compiled program onto a canvas. Returns a function that finishes the drawing at once.
+function drawPic(canvas, prog, opts) {
+  opts = opts || {};
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(PW, PH);
+  const d = img.data;
+  const set = (i, c) => { const p = SPEC[c]; d[i * 4] = p[0]; d[i * 4 + 1] = p[1]; d[i * 4 + 2] = p[2]; d[i * 4 + 3] = 255; };
+  for (let i = 0; i < PW * PH; i++) set(i, prog.paper);
+  const n = prog.idx.length;
+  let k = 0, raf = 0, done = false;
+  const finish = () => { if (done) return; done = true; cancelAnimationFrame(raf); for (; k < n; k++) set(prog.idx[k], prog.col[k]); ctx.putImageData(img, 0, 0); opts.onDone && opts.onDone(); };
+  if (opts.instant || !n) { finish(); return finish; }
+  const W = opts.weights || PACE;
+  const wt = new Float32Array(n); let total = 0;
+  for (let i = 0; i < n; i++) { wt[i] = W[prog.kind[i]]; total += wt[i]; }
+  const duration = opts.ms || 2600, t0 = performance.now();
+  let spent = 0;
+  const step = now => {
+    const budget = total * Math.min(1, (now - t0) / duration);
+    while (k < n && spent + wt[k] <= budget + 0.001) { spent += wt[k]; set(prog.idx[k], prog.col[k]); k++; }
+    ctx.putImageData(img, 0, 0);
+    if (k < n) raf = requestAnimationFrame(step); else { done = true; opts.onDone && opts.onDone(); }
+  };
+  ctx.putImageData(img, 0, 0);
+  raf = requestAnimationFrame(step);
+  return finish;
+}
+
+// ---- shared scenery helpers ------------------------------------------------
+// A box room seen from the front: back wall rectangle, side walls, floor and ceiling.
+function room(p, ink, bx0, by0, bx1, by1) {
+  p.line(ink, 0, 0, bx0, by0).line(ink, PW - 1, 0, bx1, by0).line(ink, 0, PH - 1, bx0, by1).line(ink, PW - 1, PH - 1, bx1, by1);
+  p.poly(ink, bx0, by0, bx1, by0, bx1, by1, bx0, by1);
+}
+// Point on the left wall at horizontal position x and height fraction v (0 = ceiling line, 1 = floor line).
+function wallPt(side, x, v, bx0, by0, by1) {
+  const top = x * by0 / bx0, bot = (PH - 1) - x * (PH - 1 - by1) / bx0;
+  const X = side < 0 ? x : PW - 1 - x;
+  return [X, top + v * (bot - top)];
+}
+function lcg(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+// ---- pictures ---------------------------------------------------------------
+const PICS = {
+  cryo(state) {
+    const on = !!state.power;
+    const C = on
+      ? { paper: 15, ink: 0, ceil: 15, ceil2: 7, wall: 5, wall2: 13, back: 7, back2: 15, floor: 1, floor2: 0, pod: 15, podIn: 1, podIn2: 0, strip: 14, lamp: 14, door: 1, locker: 9, frost: 13 }
+      : { paper: 0, ink: 2, ceil: 0, ceil2: 0, wall: 1, wall2: 0, back: 2, back2: 0, floor: 2, floor2: 0, pod: 3, pod2: state.loudPods ? 3 : 0, podIn: 0, podIn2: 0, strip: 10, lamp: 0, door: 0, locker: 1, frost: 15 };
+    const p = Pic(C.paper);
+    const bx0 = 92, by0 = 32, bx1 = 163, by1 = 80;
+    room(p, C.ink, bx0, by0, bx1, by1);
+    // ceiling lamp
+    p.poly(C.ink, 112, 12, 143, 12, 138, 22, 117, 22);
+    // emergency strips along the foot of the walls
+    const sl0 = wallPt(-1, 0, 0.955, bx0, by0, by1), sl1 = [bx0, by1 - 3];
+    p.line(C.strip, sl0[0], sl0[1], sl1[0], sl1[1]);
+    p.line(C.strip, PW - 1 - sl0[0], sl0[1], PW - 1 - sl1[0], sl1[1]);
+    p.line(C.strip, bx0, by1 - 3, 118, by1 - 3).line(C.strip, 137, by1 - 3, bx1, by1 - 3);
+    // door to the north, with the corridor beyond
+    p.poly(C.ink, 118, by1, 118, 46, 137, 46, 137, by1);
+    p.line(C.ink, 121, 49, 134, 49).line(C.ink, 121, 49, 121, by1).line(C.ink, 134, 49, 134, by1);
+    // locker beside the door
+    p.poly(C.ink, 143, 50, 156, 50, 156, by1 - 4, 143, by1 - 4);
+    for (const y of [54, 56, 58]) p.line(C.ink, 146, y, 153, y);
+    p.dot(C.ink, 154, 66);
+    // pods: three on each wall (the front-left one is yours)
+    const pods = [];
+    for (const side of [-1, 1]) for (const [a, b] of [[5, 30], [38, 58], [65, 81]]) {
+      const P = (u, v) => { const x = a + u * (b - a); return wallPt(side, x, v, bx0, by0, by1); };
+      const o = [P(0, 0.12), P(1, 0.12), P(1, 0.92), P(0, 0.92)];
+      const i = [P(0.2, 0.2), P(0.8, 0.2), P(0.8, 0.84), P(0.2, 0.84)];
+      p.poly(C.ink, ...o.flat());
+      p.poly(C.ink, ...i.flat());
+      // raised lid: a slim panel standing above the pod
+      const l = [P(0.08, 0.12), P(0.92, 0.12), P(0.86, 0.05), P(0.14, 0.05)];
+      p.poly(C.ink, ...l.flat());
+      pods.push({ side, a, b, P });
+    }
+    // fills: walls, back wall, floor, ceiling, then the furniture
+    p.fill(C.ceil, 40, 4, C.ceil2);
+    p.fill(C.lamp, 127, 17);
+    const lw = wallPt(-1, 34, 0.5, bx0, by0, by1); p.fill(C.wall, lw[0], lw[1], C.wall2);
+    const lw2 = wallPt(-1, 34, 0.03, bx0, by0, by1); p.fill(C.wall, lw2[0], lw2[1], C.wall2);
+    p.fill(C.wall, PW - 1 - lw[0], lw[1], C.wall2);
+    p.fill(C.wall, PW - 1 - lw2[0], lw2[1], C.wall2);
+    p.fill(C.back, 100, 40, C.back2);
+    p.fill(C.floor, 128, 104, C.floor2);
+    p.fill(C.door, 127, 70);
+    p.fill(C.locker, 149, 70);
+    for (const pod of pods) {
+      const pod2 = C.pod2 === undefined ? C.pod : C.pod2;
+      const f = pod.P(0.1, 0.5); p.fill(C.pod, f[0], f[1], pod2);
+      const lid = pod.P(0.5, 0.085); p.fill(C.pod, lid[0], lid[1], pod2);
+      const inn = pod.P(0.5, 0.5); p.fill(C.podIn, inn[0], inn[1], C.podIn2);
+    }
+    // frost breathing out of your pod (front left); gone once the ship has warmed up
+    if (on) return p;
+    const mine = pods[0], rnd = lcg(7);
+    for (let n = 0; n < 70; n++) {
+      const u = 0.25 + rnd() * 0.5, v = 0.25 + rnd() * 0.55, q = mine.P(u, v);
+      p.dot(C.frost, q[0], q[1]);
+    }
+    for (let n = 0; n < 40; n++) {
+      const q = mine.P(0.6 + rnd() * 1.6, 0.45 + rnd() * 0.45);
+      p.dot(C.frost, q[0] + rnd() * 10, q[1] + rnd() * 6);
+    }
+    return p;
+  },
+};
+
+
+// ---- palettes and helpers for the remaining pictures -----------------------------
+// Two lighting moods: red emergency light (off) and full ship lighting (on). [c1, c2] pairs are dithered.
+function pal(on) {
+  return on
+    ? { on: true, paper: 15, ink: 0, ceil: [15, 7], wall: [5, 13], back: [7, 15], floor: [1, 0], top: [15, 15], front: [5, 5], side: [1, 1], dark: [1, 1], glass: [13, 5], lamp: [14, 14], strip: 14, hi: 15, metal: [7, 7], screen: [4, 12], warm: [6, 14], cloth: [9, 1] }
+    : { on: false, paper: 0, ink: 2, ceil: [0, 0], wall: [1, 0], back: [2, 0], floor: [2, 0], top: [3, 0], front: [1, 1], side: [0, 0], dark: [0, 0], glass: [1, 0], lamp: [0, 0], strip: 10, hi: 15, metal: [3, 0], screen: [2, 0], warm: [2, 2], cloth: [1, 0] };
+}
+// Interior box room with a back wall; returns a wall-point helper. t: 0 at the picture edge, 1 at the back wall.
+function Room(p, C, bx0, by0, bx1, by1, opt) {
+  opt = opt || {};
+  p.line(C.ink, 0, 0, bx0, by0).line(C.ink, PW - 1, 0, bx1, by0).line(C.ink, 0, PH - 1, bx0, by1).line(C.ink, PW - 1, PH - 1, bx1, by1);
+  p.rect(C.ink, bx0, by0, bx1, by1);
+  p.pf(opt.ceil || C.ceil, 0, 0, PW, 0, bx1, by0, bx0, by0);
+  p.pf(opt.wall || C.wall, 0, 0, bx0, by0, bx0, by1, 0, PH);
+  p.pf(opt.wall || C.wall, PW, 0, PW, PH, bx1, by1, bx1, by0);
+  p.pf(opt.floor || C.floor, 0, PH, bx0, by1, bx1, by1, PW, PH);
+  p.pf(opt.back || C.back, bx0, by0, bx1 + 1, by0, bx1 + 1, by1, bx0, by1);
+  return (side, tt, v) => {
+    const x = side < 0 ? tt * bx0 : (PW - 1) - tt * ((PW - 1) - bx1);
+    const top = tt * by0, bot = (PH - 1) - tt * ((PH - 1) - by1);
+    return [x, top + v * (bot - top)];
+  };
+}
+// Quad on a side wall between depths t0..t1 and heights v0..v1.
+function wallQuad(W, side, t0, t1, v0, v1) { return [...W(side, t0, v0), ...W(side, t1, v0), ...W(side, t1, v1), ...W(side, t0, v1)]; }
+// A solid block: front rectangle plus a top face receding by (dx, dy) and a side face on the dx side.
+function Block(p, C, x0, y0, x1, y1, dx, dy, cols) {
+  cols = cols || {};
+  const top = [x0, y0, x1, y0, x1 + dx, y0 + dy, x0 + dx, y0 + dy];
+  const sx = dx >= 0 ? x1 : x0;
+  const side = [sx, y0, sx + dx, y0 + dy, sx + dx, y1 + dy, sx, y1];
+  p.poly(C.ink, ...top); p.poly(C.ink, ...side); p.rect(C.ink, x0, y0, x1, y1);
+  p.pf(cols.side || C.side, ...side); p.pf(cols.top || C.top, ...top); p.pf(cols.front || C.front, x0, y0, x1 + 1, y0, x1 + 1, y1, x0, y1);
+}
+function stars(p, seed, n, box, c) {
+  const r = lcg(seed); box = box || [0, 0, PW, PH];
+  for (let i = 0; i < n; i++) p.dot(c === undefined ? (r() < 0.25 ? 15 : 7) : c, box[0] + r() * (box[2] - box[0]), box[1] + r() * (box[3] - box[1]));
+}
+// The grey moon Tethra-7: dithered disc with crater rings, optionally clipped to y <= clipY.
+function moon(p, cx, cy, r, seed, clip, craters) {
+  let pts = p.ellPts(cx, cy, r, r, 0, Math.PI * 2, 120);
+  if (clip) { // keep the part inside [x0,y0,x1,y1]
+    const [x0, y0, x1, y1] = clip, out = [];
+    for (let i = 0; i < pts.length; i += 2) out.push(Math.min(x1, Math.max(x0, pts[i])), Math.min(y1, Math.max(y0, pts[i + 1])));
+    pts = out;
+  }
+  p.pf([7, 0], ...pts);
+  const rnd = lcg(seed);
+  for (let i = 0; i < (craters === undefined ? 9 : craters); i++) {
+    const a = rnd() * Math.PI * 2, d = rnd() * r * 0.8, cr = 3 + rnd() * r * 0.12;
+    const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.9;
+    if (clip && (y - cr < clip[1] || y + cr > clip[3] || x - cr < clip[0] || x + cr > clip[2])) continue;
+    p.dellipse(0, x, y, cr, cr * 0.7);
+    p.dellipse(15, x, y - 1, cr * 0.8, cr * 0.5, Math.PI * 1.1, Math.PI * 1.9);
+  }
+}
+function hazard(p, x0, y0, x1, y1) { // yellow/black diagonal stripes as detail lines
+  for (let k = x0 - (y1 - y0); k < x1; k += 6) for (let w = 0; w < 3; w++) {
+    const a = Math.max(x0, k + w), b = Math.min(x1, k + w + (y1 - y0));
+    if (b <= a) continue;
+    p.dline(14, a, y1 - (a - (k + w)), b, y1 - (b - (k + w)));
+  }
+}
+
+Object.assign(PICS, {
+  machine(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    const W = Room(p, C, 84, 28, 171, 82);
+    // tool board with painted, mostly empty outlines
+    p.rect(C.ink, 98, 34, 157, 58); p.pf(C.on ? [7, 7] : [1, 0], 98, 34, 158, 34, 158, 58, 98, 58);
+    const sil = C.on ? 1 : 15;
+    p.dline(sil, 104, 40, 104, 52).dline(sil, 100, 40, 108, 40);               // hammer
+    p.dline(sil, 114, 52, 120, 40).dellipse(sil, 121, 39, 3, 2);               // wrench
+    p.dline(sil, 130, 40, 130, 52).dline(sil, 128, 52, 132, 52);               // screwdriver
+    p.dline(sil, 140, 40, 146, 52).dline(sil, 146, 40, 140, 52);               // cutters
+    p.dline(sil, 151, 42, 151, 52).dline(sil, 149, 42, 153, 42);
+    p.dline(C.on ? 2 : 10, 100, 62, 104, 60, 108, 63, 112, 60, 116, 63, 121, 60, 126, 62); // scrawled note
+    // workbench along the back wall, parts crate below
+    Block(p, C, 92, 70, 163, 75, -4, -6, { top: C.metal, front: C.front });
+    p.rect(C.ink, 95, 75, 99, 92).rect(C.ink, 156, 75, 160, 92);
+    p.pf(C.side, 95, 75, 100, 75, 100, 92, 95, 92); p.pf(C.side, 156, 75, 161, 75, 161, 92, 156, 92);
+    Block(p, C, 116, 82, 140, 94, -3, -4, { top: C.on ? [6, 6] : [3, 0], front: C.on ? [14, 6] : [3, 3] });
+    // lathe against the left wall
+    Block(p, C, 8, 72, 58, 100, 14, -10, { top: C.metal, front: C.on ? [9, 1] : [1, 1] });
+    p.disc(C.metal, 24, 86, 8, 8); p.ellipse(C.ink, 24, 86, 8, 8);
+    p.dline(C.ink, 32, 86, 52, 86);
+    // door to the east, on the right wall
+    const d = wallQuad(W, 1, 0.35, 0.62, 0.3, 1);
+    p.poly(C.ink, ...d); p.pf(C.dark, ...d);
+    return p;
+  },
+
+  pumps(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    if (!s.lit) return Pic(0);
+    const W = Room(p, C, 84, 28, 171, 82);
+    // main coolant pipe along the left wall and the back wall
+    const a = W(-1, 0, 0.22), b = W(-1, 1, 0.22), c = W(-1, 1, 0.3), d = W(-1, 0, 0.3);
+    p.poly(C.ink, ...a, ...b, ...c, ...d); p.pf(C.metal, ...a, ...b, ...c, ...d);
+    p.rect(C.ink, 84, b[1], 171, c[1]); p.pf(C.metal, 84, b[1], 172, b[1], 172, c[1], 84, c[1]);
+    // three pumps
+    for (const x of [98, 128, 158]) {
+      p.rect(C.ink, x - 10, 56, x + 10, 86);
+      p.ellipse(C.ink, x, 56, 10, 3);
+      p.pf(C.on ? [5, 13] : [1, 0], x - 10, 56, x + 11, 56, x + 11, 86, x - 10, 86);
+      p.disc(C.metal, x, 56, 10, 3);
+      p.dline(C.ink, x, c[1], x, 53);
+    }
+    // vertical pipe with the big handwheel valve
+    p.rect(C.ink, 198, 91, 212, 119); p.pf(C.metal, 198, 91, 213, 91, 213, 119, 198, 119);
+    p.ellipse(C.ink, 205, 66, 24, 24); p.ellipse(C.ink, 205, 66, 19, 19);
+    p.pf(C.on ? [2, 2] : [10, 2], ...p.ellPts(205, 66, 24, 24, 0, Math.PI * 2, 60));
+    p.disc(C.paper === 0 ? [0, 0] : [7, 7], 205, 66, 18, 18);
+    for (let k = 0; k < 4; k++) { const an = k * Math.PI / 2 + 0.4; p.dline(s.power ? 0 : 10, 205, 66, 205 + Math.cos(an) * 19, 66 + Math.sin(an) * 19); }
+    p.disc(C.metal, 205, 66, 4, 4);
+    // pressure gauge on the right wall
+    p.ellipse(C.ink, 236, 34, 10, 10); p.disc([15, 15], 236, 34, 9, 9);
+    p.dellipse(4, 236, 34, 7, 7, -Math.PI * 0.45, -Math.PI * 0.05);
+    const ang = s.coolant ? -Math.PI * 0.25 : Math.PI * 0.8;
+    p.dline(s.coolant ? 4 : 2, 236, 34, 236 + Math.cos(ang) * 7, 34 + Math.sin(ang) * 7);
+    // frost on the pipes until the coolant flows
+    if (!s.coolant) { const r = lcg(3); for (let i = 0; i < 80; i++) { const tt = r(), q = W(-1, tt, 0.2 + r() * 0.12); p.dot(15, q[0], q[1]); } for (let i = 0; i < 30; i++) p.dot(15, 84 + r() * 87, b[1] + r() * (c[1] - b[1])); }
+    return p;
+  },
+
+  reactorCtl(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    Room(p, C, 80, 26, 175, 80);
+    // screens either side of the core door
+    for (const [x0, x1] of [[84, 98], [100, 114], [141, 155], [157, 171]]) for (const [y0, y1] of [[32, 42], [45, 55], [58, 68]]) {
+      p.rect(C.ink, x0, y0, x1, y1); p.pf(C.screen, x0, y0, x1 + 1, y0, x1 + 1, y1, x0, y1);
+      p.dline(C.on ? 12 : 10, x0 + 2, y1 - 3, x0 + 5, y1 - 6, x0 + 8, y1 - 4, x1 - 2, y0 + 3);
+    }
+    // heavy core door with hazard frame
+    p.rect(C.ink, 117, 36, 138, 80); p.rect(C.ink, 121, 40, 134, 80);
+    p.pf([0, 0], 117, 36, 139, 36, 139, 80, 117, 80);
+    p.pf(C.metal, 121, 40, 135, 40, 135, 80, 121, 80);
+    hazard(p, 117, 36, 138, 40);
+    // big status panel on the left wall
+    p.poly(C.ink, 14, 30, 58, 36, 58, 66, 14, 72); p.pf(C.screen, 14, 30, 58, 36, 58, 66, 14, 72);
+    for (let i = 0; i < 4; i++) p.dline(C.on ? 12 : 10, 18, 38 + i * 8, 52, 41 + i * 6);
+    // console in the foreground with the IGNITION button under its flip cover
+    p.poly(C.ink, 36, 119, 220, 119, 204, 94, 52, 94); p.poly(C.ink, 52, 94, 204, 94, 192, 86, 64, 86);
+    p.pf(C.front, 36, 119, 220, 119, 204, 94, 52, 94); p.pf(C.metal, 52, 94, 204, 94, 192, 86, 64, 86);
+    p.disc([10, 10], 128, 90, 11, 3.5); p.dellipse(0, 128, 90, 11, 3.5);
+    p.dpoly(C.on ? 1 : 15, 116, 89, 140, 89, 136, 76, 120, 76);
+    for (const x of [76, 92, 164, 180]) p.dot(C.on ? 12 : 10, x, 90).dot(14, x + 4, 90);
+    return p;
+  },
+
+  medbay(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    Room(p, C, 84, 28, 171, 82);
+    // wall of drawers either side of the closet door
+    for (const [x0, x1] of [[88, 100], [102, 114], [141, 153], [155, 167]]) for (const [y0, y1] of [[34, 46], [48, 60], [62, 74]]) {
+      p.rect(C.ink, x0, y0, x1, y1); p.pf(C.metal, x0, y0, x1 + 1, y0, x1 + 1, y1, x0, y1); p.dline(C.ink, x0 + 4, y0 + 3, x1 - 4, y0 + 3);
+    }
+    p.rect(C.ink, 118, 40, 137, 82); p.pf(C.dark, 118, 40, 138, 40, 138, 82, 118, 82);
+    // two surgical beds receding along the walls
+    const bed = sgn => {
+      const X = x => sgn < 0 ? x : PW - 1 - x;
+      const top = [X(8), 92, X(60), 92, X(92), 74, X(64), 74];
+      const front = [X(8), 92, X(60), 92, X(60), 99, X(8), 99];
+      const side = [X(60), 92, X(92), 74, X(92), 80, X(60), 99];
+      p.poly(C.ink, ...top); p.poly(C.ink, ...front); p.poly(C.ink, ...side);
+      p.pf(C.on ? [15, 15] : [3, 0], ...top); p.pf(C.front, ...front); p.pf(C.side, ...side);
+      p.pf(C.cloth, X(14), 91, X(30), 91, X(46), 82, X(34), 82);
+      p.line(C.ink, X(14), 99, X(14), 112).line(C.ink, X(56), 99, X(56), 112);
+    };
+    bed(-1); bed(1);
+    // scanner arch over the right bed, glowing on battery
+    p.poly(C.ink, 178, 92, 178, 52, 220, 40, 220, 84);
+    p.poly(C.ink, 184, 88, 184, 58, 214, 48, 214, 81);
+    p.pf(C.on ? [13, 5] : [5, 0], 178, 92, 178, 52, 220, 40, 220, 84);
+    p.pf(C.paper === 0 ? [0, 0] : [5, 13], 184, 88, 184, 58, 214, 48, 214, 81);
+    // overturned chair on the floor
+    p.dpoly(C.on ? 0 : 15, 112, 106, 138, 101, 142, 108, 116, 113);
+    p.dline(C.on ? 0 : 15, 116, 113, 110, 118, 142, 108, 148, 112, 112, 106, 104, 104);
+    return p;
+  },
+
+  hydro(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    const W = Room(p, C, 88, 30, 167, 78);
+    const leaf = C.on ? 4 : 4, leaf2 = C.on ? 12 : 4;
+    const cry = s.ejected ? 7 : 13;
+    // racks: shelves along both walls and the back wall
+    for (const side of [-1, 1]) for (const v of [0.34, 0.6, 0.86]) {
+      const a = W(side, 0, v), b = W(side, 1, v), a2 = W(side, 0, v + 0.04), b2 = W(side, 1, v + 0.04);
+      p.poly(C.ink, ...a, ...b, ...b2, ...a2); p.pf(C.metal, ...a, ...b, ...b2, ...a2);
+      // plants on the shelf
+      const r = lcg(side * 10 + v * 100);
+      for (let i = 0; i < 9; i++) {
+        const tt = 0.05 + i * 0.105, q = W(side, tt, v), h = (1 - tt) * 9 + 3;
+        p.dline(leaf, q[0], q[1], q[0] - 2, q[1] - h, q[0], q[1] - h * 0.6, q[0] + 2, q[1] - h, q[0] + 1, q[1]);
+        for (let k = 0; k < 3; k++) p.dot(cry, q[0] - 2 + r() * 5, q[1] - r() * h);
+      }
+    }
+    for (const y of [46, 62, 76]) {
+      p.rect(C.ink, 88, y, 167, y + 2); p.pf(C.metal, 88, y, 168, y, 168, y + 2, 88, y + 2);
+      for (let x = 92; x < 165; x += 7) { p.dline(leaf2, x, y, x - 1, y - 6, x + 1, y - 4, x + 2, y - 7, x + 2, y); p.dot(cry, x + 1, y - 5); }
+    }
+    // grow lamps on the ceiling
+    for (const off of [-24, 24]) p.dline(C.on ? 11 : 3, 128 + off * 3.2, 0, 128 + off, 30);
+    p.dline(C.on ? 11 : 3, 100, 12, 155, 12);
+    return p;
+  },
+
+  xenoLab(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    Room(p, C, 84, 28, 171, 82);
+    // isolation hoods on the back wall
+    for (const [x0, x1] of [[88, 110], [116, 139], [145, 167]]) {
+      p.rect(C.ink, x0, 34, x1, 70); p.rect(C.ink, x0 + 3, 40, x1 - 3, 66);
+      p.pf(C.metal, x0, 34, x1 + 1, 34, x1 + 1, 70, x0, 70); p.pf(C.glass, x0 + 3, 40, x1 - 2, 40, x1 - 2, 66, x0 + 3, 66);
+      p.dline(C.hi, x0 + 5, 44, x0 + 9, 42);
+    }
+    // long bench in the foreground
+    p.poly(C.ink, 24, 92, 232, 92, 206, 82, 50, 82); p.rect(C.ink, 24, 92, 232, 104);
+    p.pf(C.metal, 24, 92, 232, 92, 206, 82, 50, 82); p.pf(C.front, 24, 92, 233, 92, 233, 104, 24, 104);
+    // microscope
+    p.disc(C.on ? [0, 0] : [3, 3], 86, 86, 12, 3);
+    p.dline(C.on ? 0 : 15, 84, 86, 84, 70, 96, 58).dline(C.on ? 0 : 15, 88, 86, 88, 72, 100, 60);
+    p.dpoly(C.on ? 0 : 15, 94, 52, 104, 60, 100, 64, 90, 56);
+    p.dline(C.on ? 0 : 15, 80, 76, 98, 76);
+    // scattered notes
+    const r = lcg(11);
+    for (let i = 0; i < 6; i++) { const x = 120 + r() * 90, y = 84 + r() * 6; p.pf([15, 15], x, y, x + 10, y - 1, x + 12, y + 4, x + 2, y + 5); }
+    return p;
+  },
+
+  captCabin(s) {
+    const C = pal(s.power), p = Pic(C.paper);
+    Room(p, C, 84, 28, 171, 82);
+    // wall terminal with the captain's log on screen
+    p.rect(C.ink, 106, 38, 150, 64); p.pf(C.on ? [0, 0] : [0, 0], 106, 38, 151, 38, 151, 64, 106, 64);
+    for (let i = 0; i < 5; i++) p.dline(C.on ? 12 : 10, 110, 43 + i * 4, 110 + 20 + ((i * 13) % 17), 43 + i * 4);
+    // bunk made with military corners
+    const top = [6, 90, 62, 90, 90, 72, 60, 72], front = [6, 90, 62, 90, 62, 100, 6, 100], side = [62, 90, 90, 72, 90, 80, 62, 100];
+    p.poly(C.ink, ...top); p.poly(C.ink, ...front); p.poly(C.ink, ...side);
+    p.pf(C.cloth, ...top); p.pf(C.cloth, ...front); p.pf(C.side, ...side);
+    p.pf([15, 15], 58, 74, 80, 74, 74, 79, 52, 79); p.poly(C.ink, 58, 74, 80, 74, 74, 79, 52, 79);
+    p.dline(C.hi, 10, 90, 62, 90);
+    // desk with its single drawer
+    Block(p, C, 176, 80, 236, 106, -14, -8, { top: C.metal, front: C.on ? [9, 9] : [1, 0] });
+    p.rect(C.ink, 186, 86, 226, 96); p.dline(C.on ? 15 : 14, 202, 91, 210, 91);
+    return p;
+  },
+
+  hangar(s) {
+    const C = pal(true), p = Pic(C.paper);
+    Room(p, C, 40, 14, 215, 90, { ceil: [1, 0], back: [7, 7], wall: [5, 1] });
+    // landing circle on the floor
+    p.dellipse(14, 128, 104, 96, 12);
+    // shuttle Wren, side view
+    const hull = [46, 84, 178, 84, 206, 76, 214, 64, 200, 54, 150, 46, 72, 46, 50, 56];
+    p.poly(C.ink, ...hull); p.pf([15, 7], ...hull);
+    p.pf([0, 7], 46, 78, 186, 78, 178, 84, 46, 84);                 // scorch marks underneath
+    const win = [184, 58, 202, 60, 206, 66, 186, 66];
+    p.poly(C.ink, ...win); p.pf([13, 5], ...win);
+    p.rect(C.ink, 98, 54, 118, 84); p.pf([0, 0], 98, 54, 119, 54, 119, 84, 98, 84);  // open hatch
+    p.poly(C.ink, 90, 84, 140, 84, 152, 96, 102, 96); p.pf(C.metal, 90, 84, 140, 84, 152, 96, 102, 96);   // wing stub
+    p.line(C.ink, 68, 84, 62, 104).line(C.ink, 172, 84, 178, 104);
+    p.dline(0, 56, 104, 68, 104).dline(0, 172, 104, 184, 104);
+    p.dline(2, 72, 52, 140, 52);                                       // red stripe along the hull
+    // ceiling floodlights
+    for (const x of [80, 128, 176]) { p.rect(C.ink, x - 10, 6, x + 10, 10); p.pf([14, 14], x - 10, 6, x + 11, 6, x + 11, 10, x - 10, 10); }
+    return p;
+  },
+
+  cargo(s) {
+    if (!s.lit) return Pic(0);
+    const C = pal(s.power), p = Pic(C.paper);
+    const W = Room(p, C, 84, 28, 171, 82);
+    // stacked survey crates under a cargo net
+    Block(p, C, 10, 70, 60, 104, 12, -8, { top: C.metal, front: C.on ? [6, 6] : [3, 0] });
+    Block(p, C, 16, 46, 54, 70, 10, -7, { top: C.metal, front: C.on ? [6, 14] : [3, 0] });
+    Block(p, C, 70, 74, 96, 92, 6, -5, { top: C.metal, front: C.on ? [6, 6] : [3, 0] });
+    const net = C.on ? 0 : 7;
+    for (let k = 0; k < 5; k++) { p.dline(net, 10 + k * 10, 104, 16 + k * 8, 40); p.dline(net, 10, 100 - k * 10, 66, 76 - k * 8); }
+    // cargo airlock inner door on the right wall
+    const fr = wallQuad(W, 1, 0.18, 0.7, 0.12, 1), dr = wallQuad(W, 1, 0.24, 0.64, 0.2, 1);
+    p.poly(C.ink, ...fr); p.poly(C.ink, ...dr);
+    p.pf([14, 0], ...fr);
+    p.pf(s.innerOpen ? [0, 0] : C.metal, ...dr);
+    if (!s.innerOpen) { const pc = W(1, 0.44, 0.45); p.disc([1, 1], pc[0], pc[1], 5, 6); p.dellipse(C.ink, pc[0], pc[1], 5, 6); }
+    // keypad and cycle button beside the door
+    const kp = W(1, 0.82, 0.42), cb = W(1, 0.82, 0.6);
+    p.rect(C.ink, kp[0] - 4, kp[1] - 5, kp[0] + 4, kp[1] + 5); p.pf(C.dark, kp[0] - 4, kp[1] - 5, kp[0] + 5, kp[1] - 5, kp[0] + 5, kp[1] + 5, kp[0] - 4, kp[1] + 5);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) p.dot(s.power ? 12 : 2, kp[0] - 2 + j * 2, kp[1] - 3 + i * 3);
+    p.disc([14, 0], cb[0], cb[1], 3, 3);
+    return p;
+  },
+
+  hull(s) {
+    const p = Pic(0);
+    stars(p, 21, 60, [0, 0, 256, 80]);
+    moon(p, 200, 150, 140, 5);
+    // the hull of the Halcyon, foreground
+    const h = [0, 64, 170, 119, 0, 119];
+    p.poly(5, ...h); p.pf([7, 1], ...h);
+    for (let k = 1; k < 5; k++) p.dline(1, 0, 64 + k * 12, 170 - k * 34, 119);
+    for (let k = 1; k < 5; k++) p.dline(1, k * 30, 64 + k * 30 * 55 / 170, k * 16, 119);
+    // sensor mast rising out of the hull, with handholds
+    p.poly(5, 34, 76, 46, 80, 58, 0, 52, 0); p.pf([7, 0], 34, 76, 46, 80, 58, 0, 52, 0);
+    for (let y = 70; y > 4; y -= 11) { const x = 40 + (76 - y) * 0.2; p.dellipse(14, x + 9, y, 4, 3, 0, Math.PI); }
+    return p;
+  },
+
+  sensorMast(s) {
+    const p = Pic(0);
+    stars(p, 33, 70, [0, 0, 256, 120]);
+    moon(p, 40, 150, 110, 9);
+    // mast pole and the star tracker housing
+    p.poly(5, 120, 119, 136, 119, 134, 76, 122, 76); p.pf([7, 1], 120, 119, 136, 119, 134, 76, 122, 76);
+    p.rect(5, 92, 30, 164, 76); p.pf([7, 7], 92, 30, 165, 30, 165, 76, 92, 76);
+    p.poly(5, 92, 30, 104, 22, 176, 22, 164, 30); p.pf([15, 15], 92, 30, 104, 22, 176, 22, 164, 30);
+    p.poly(5, 164, 30, 176, 22, 176, 68, 164, 76); p.pf([1, 0], 164, 30, 176, 22, 176, 68, 164, 76);
+    p.ellipse(0, 128, 53, 17, 17);
+    p.disc([9, 1], 128, 53, 16, 16);
+    if (!s.sensor) {
+      // crystal crust over the lens
+      const cc = s.ejected ? [7, 0] : [13, 5], r = lcg(17);
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 + r() * 0.4, d = 4 + r() * 8;
+        const x = 128 + Math.cos(a) * d, y = 53 + Math.sin(a) * d, len = 8 + r() * 10, w = 3 + r() * 3;
+        const tip = [x + Math.cos(a - 0.6) * len, y + Math.sin(a - 0.6) * len];
+        const tri = [x - w, y, tip[0], tip[1], x + w, y + w];
+        p.pf(cc, ...tri); p.dpoly(s.ejected ? 0 : 15, ...tri);
+      }
+    } else {
+      p.dellipse(15, 128, 53, 10, 10, Math.PI * 1.1, Math.PI * 1.5).dot(15, 122, 47).dot(15, 123, 46);
+      const r = lcg(4); for (let i = 0; i < 12; i++) p.dot(7, 100 + r() * 60, 80 + r() * 30);
+    }
+    return p;
+  },
+
+  bridge(s) {
+    const C = pal(true), p = Pic(C.paper);
+    Room(p, C, 48, 8, 207, 76, { ceil: [1, 0], wall: [1, 9], back: [9, 1], floor: [0, 1] });
+    // viewscreen full of moon
+    p.rect(0, 60, 14, 195, 68); p.pf([0, 0], 60, 14, 196, 14, 196, 68, 60, 68);
+    stars(p, 41, 30, [62, 16, 194, 40]);
+    moon(p, 128, 104, s.won ? 46 : 70, 12, [61, 15, 195, 67]);
+    p.rect(0, 60, 14, 195, 68);
+    // side consoles
+    p.poly(0, 0, 70, 30, 66, 44, 100, 0, 110); p.pf([5, 1], 0, 70, 30, 66, 44, 100, 0, 110);
+    p.poly(0, 255, 70, 225, 66, 211, 100, 255, 110); p.pf([5, 1], 255, 70, 225, 66, 211, 100, 255, 110);
+    // helm console with the key slot
+    p.poly(0, 72, 119, 184, 119, 174, 96, 82, 96); p.poly(0, 82, 96, 174, 96, 166, 88, 90, 88);
+    p.pf([1, 1], 72, 119, 184, 119, 174, 96, 82, 96); p.pf([7, 5], 82, 96, 174, 96, 166, 88, 90, 88);
+    p.rect(0, 124, 90, 132, 94); p.pf([0, 0], 124, 90, 133, 90, 133, 94, 124, 94);
+    if (s.keyIn) p.dline(14, 128, 86, 128, 92);
+    for (const x of [96, 104, 112, 144, 152, 160]) p.dot(x % 16 ? 12 : 10, x, 92);
+    // after the crew wakes: Hale beside the helm
+    if (s.crewOnBridge) {
+      p.disc([0, 0], 60, 60, 5, 6);
+      p.pf([0, 0], 52, 66, 68, 66, 72, 100, 48, 100);
+    }
+    return p;
+  },
+
+  aiCore(s) {
+    const p = Pic(0), ink = 5;
+    p.line(ink, 0, 0, 100, 40).line(ink, 255, 0, 155, 40).line(ink, 0, 119, 100, 80).line(ink, 255, 119, 155, 80);
+    p.pf([1, 0], 0, 119, 100, 80, 155, 80, 255, 119);
+    const glow = s.ejected ? 13 : (s.pulse ? 11 : 3);
+    // two rows of black columns, receding
+    for (const side of [-1, 1]) for (let i = 0; i < 4; i++) {
+      const t0 = i * 0.24 + 0.04, t1 = t0 + 0.12;
+      const X = tt => side < 0 ? tt * 100 : 255 - tt * 100;
+      const top = tt => tt * 40, bot = tt => 119 - tt * 39;
+      const q = [X(t0), top(t0) + 4, X(t1), top(t1) + 4, X(t1), bot(t1) - 2, X(t0), bot(t0) - 2];
+      p.poly(ink, ...q); p.pf([0, 0], ...q);
+      const xm = (X(t0) + X(t1)) / 2;
+      for (let k = 0; k < 3; k++) { const y0 = top(t0) + 10 + k * (bot(t0) - top(t0) - 24) / 3; p.dline(glow, xm, y0, xm, y0 + (bot(t0) - top(t0)) / 6); }
+    }
+    // the far column
+    p.rect(ink, 118, 40, 137, 80); p.pf([0, 0], 118, 40, 138, 40, 138, 80, 118, 80);
+    p.dline(glow, 127, 46, 127, 74);
+    return p;
+  },
+
+  obsDome(s) {
+    const p = Pic(0);
+    // the glass dome, open to the stars
+    stars(p, 55, 70, [6, 4, 250, 96]);
+    moon(p, 196, 38, 22, 8, null, 3);
+    const frame = 13;
+    p.ellipse(frame, 128, 100, 127, 96, Math.PI, Math.PI * 2);
+    for (const rx of [86, 44]) p.ellipse(frame, 128, 100, rx, 96, Math.PI, Math.PI * 2);
+    p.line(frame, 128, 4, 128, 100);
+    for (const h of [0.45, 0.8]) { const y = 100 - 96 * h, half = 127 * Math.sqrt(1 - h * h); p.dellipse(frame, 128, y, half, 6, Math.PI, Math.PI * 2); }
+    // floor of the dome
+    p.line(frame, 0, 100, 255, 100); p.pf([1, 0], 0, 101, 256, 101, 256, 120, 0, 120);
+    // eight couches in a ring; draw the far ones first
+    const ring = [];
+    for (let i = 0; i < 8; i++) { const a = Math.PI * 2 * i / 8 + Math.PI / 8; ring.push({ i, x: 128 + Math.cos(a) * 96, y: 102 + Math.sin(a) * 11 }); }
+    ring.sort((a, b) => a.y - b.y);
+    const emptyIdx = 1; // the eighth couch, nearest the viewer on the right
+    for (const c of ring) {
+      const sc = 0.85 + (c.y - 91) / 22 * 0.45, w = 17 * sc, h = 5 * sc;
+      const q = [c.x - w, c.y, c.x + w, c.y, c.x + w * 0.8, c.y - h, c.x - w * 0.8, c.y - h];
+      p.poly(5, ...q); p.pf([5, 1], ...q);
+      p.pf([1, 1], c.x - w, c.y, c.x + w, c.y, c.x + w, c.y + 2 * sc, c.x - w, c.y + 2 * sc);
+      if (!s.ejected && c.i !== emptyIdx) {
+        p.pf([7, 7], c.x - w * 0.45, c.y - h - 3 * sc, c.x + w * 0.75, c.y - h - 2 * sc, c.x + w * 0.75, c.y - h + 1, c.x - w * 0.45, c.y - h + 1);
+        p.disc([15, 15], c.x - w * 0.62, c.y - h - 2 * sc, 3 * sc, 2.6 * sc);
+      }
+    }
+    // the pedestal in the middle, and the Lattice above it
+    p.rect(13, 122, 82, 134, 100); p.pf([7, 0], 122, 82, 135, 82, 135, 100, 122, 100); p.ellipse(13, 128, 82, 6, 2);
+    if (!s.ejected) {
+      const lat = [128, 56, 138, 68, 128, 78, 118, 68];
+      p.pf([15, 13], ...lat); p.dpoly(15, ...lat); p.dpoly(13, 128, 62, 133, 68, 128, 74, 123, 68);
+      for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; p.dline(13, 128 + Math.cos(a) * 14, 67 + Math.sin(a) * 14, 128 + Math.cos(a) * 20, 67 + Math.sin(a) * 20); }
+    }
+    return p;
+  },
+});
+
+// Which picture (if any) belongs to a room, and a key for the variant that the current state shows.
+function pictureFor(room, s) {
+  const f = PICS[room];
+  if (!f) return null;
+  const st = { power: !!s.power, lit: s.lit !== false, ejected: !!s.ejected, sensor: !!s.sensor, coolant: !!s.coolant, innerOpen: !!s.innerOpen, keyIn: !!s.keyIn, crewOnBridge: !!s.ejected, won: !!s.won };
+  const rel = { cryo: ['power'], machine: ['power'], pumps: ['power', 'lit', 'coolant'], reactorCtl: ['power'], medbay: ['power'], hydro: ['power', 'ejected'], xenoLab: ['power'], captCabin: ['power'], hangar: [], cargo: ['power', 'lit', 'innerOpen'], hull: [], sensorMast: ['ejected', 'sensor'], bridge: ['keyIn', 'crewOnBridge', 'won'], aiCore: ['ejected'], obsDome: ['ejected'] }[room] || [];
+  const key = room + ':' + rel.map(k => (st[k] ? 1 : 0)).join('');
+  return { key, room, build: () => f(st) };
+}
+
+
+
+</script>
+<script>
 (function () {
   const log = document.getElementById('log');
   const input = document.getElementById('cmd');
-  const play = document.getElementById('play');
+  const play = document.getElementById('logwrap');
   const KEY = 'halcyon-drift-save', LKEY = 'halcyon-drift-lang';
   let lang = 'de';
   try { lang = localStorage.getItem(LKEY) || ((navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en'); } catch (e) {}
   let batch = [], lastStatus = null;
   const OKEY = 'halcyon-drift-opts';
-  let opts = { orbit: 'normal', map: true, script: true };
+  let opts = { orbit: 'normal', map: true, script: true, pics: true, picMode: 'first', picOpen: true };
   try { const o = JSON.parse(localStorage.getItem(OKEY) || 'null'); if (o) opts = Object.assign(opts, o); } catch (e) {}
   const other = l => (l === 'de' ? 'en' : 'de');
   function paint(p) {
@@ -1672,8 +2362,8 @@ if (typeof module !== 'undefined') module.exports = { createGame };
     const ids = ORDER.map((k, i) => (st.scored[k] ? i + 1 : null)).filter(Boolean).join(',');
     const now = new Date();
     const head = lang === 'de'
-      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 10 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
-      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 10 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
+      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 11 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
+      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 11 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
     const body = scriptLog.map(([c, en, de]) => {
       const txt = lang === 'de' && de !== undefined ? de : en;
       if (c === 'cmd') return '\n> ' + txt;
@@ -1855,6 +2545,8 @@ if (typeof module !== 'undefined') module.exports = { createGame };
     const mt = document.querySelector('button[data-panel="map"]');
     mt.hidden = !opts.map;
     if (!opts.map && !document.getElementById('map').hidden) document.querySelector('button[data-panel="play"]').click();
+    document.querySelectorAll('#optPics button').forEach(b => b.setAttribute('aria-pressed', (b.dataset.v === 'on') === opts.pics ? 'true' : 'false'));
+    document.querySelectorAll('#optPicMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === opts.picMode ? 'true' : 'false'));
     const st = game.state();
     document.getElementById('orbitWrap').hidden = opts.orbit === 'off' || !st || !!st.flags.won;
   }
@@ -1885,6 +2577,7 @@ if (typeof module !== 'undefined') module.exports = { createGame };
     if (w.length === 2 && (w[0] === 'orbit' || w[0] === 'zeitdruck') && ORBCMD[w[1]]) { setOrbit(ORBCMD[w[1]], true); return true; }
     if (w.length === 2 && (w[0] === 'karte' || w[0] === 'map') && ['an', 'on', 'aus', 'off'].includes(w[1])) { setMap(w[1] === 'an' || w[1] === 'on', true); return true; }
     if (w.length === 2 && (w[0] === 'skript' || w[0] === 'script') && ['an', 'on', 'aus', 'off'].includes(w[1])) { setScript(w[1] === 'an' || w[1] === 'on', true); return true; }
+    if (w.length === 2 && ['bilder', 'bild', 'pictures', 'picture', 'grafik', 'graphics'].includes(w[0]) && ['an', 'on', 'aus', 'off'].includes(w[1])) { setPics(w[1] === 'an' || w[1] === 'on', true); return true; }
     if (w.length === 1 && ['skript', 'script', 'unscript'].includes(w[0])) { if (w[0] === 'unscript') setScript(false, true); else io.print({ en: `[Script is ${opts.script ? 'on' : 'off'}. ${scriptLog.filter(x => x[0] === 'cmd').length} commands recorded. Copy it under MANUAL > SETTINGS > COPY SCRIPT.]`, de: `[Skript ist ${opts.script ? 'an' : 'aus'}. ${scriptLog.filter(x => x[0] === 'cmd').length} Befehle aufgezeichnet. Kopieren unter HANDBUCH > EINSTELLUNGEN > SKRIPT KOPIEREN.]` }, 'sys'); return true; }
     return false;
   }
@@ -1896,6 +2589,43 @@ if (typeof module !== 'undefined') module.exports = { createGame };
     box.innerHTML = `<b>${esc(info.name[lang])}</b>${esc(info.desc[lang])}`;
     box._room = el.dataset.room;
   });
+  // ------------------------------------------------ location pictures
+  const PKEY = 'halcyon-drift-pics-seen';
+  const picbar = document.getElementById('picbar'), picCv = document.getElementById('pic'), picToggle = document.getElementById('picToggle');
+  let picSeen = new Set(), picShown = null, picFinish = null;
+  try { const x = JSON.parse(localStorage.getItem(PKEY) || 'null'); if (Array.isArray(x)) picSeen = new Set(x); } catch (e) {}
+  const savePicSeen = () => { try { localStorage.setItem(PKEY, JSON.stringify([...picSeen])); } catch (e) {} };
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function picState() {
+    const st = game.state(), f = st.flags;
+    return { power: f.power, lit: game.lit(), ejected: f.ejected, sensor: f.sensor, coolant: f.coolant, innerOpen: f.innerOpen, keyIn: f.keyIn, won: f.won };
+  }
+  function updatePic(force) {
+    const st = game.state();
+    const pic = opts.pics && st ? pictureFor(st.loc, picState()) : null;
+    if (!pic) { if (picFinish) picFinish(); picbar.hidden = true; picShown = null; return; }
+    picbar.hidden = false;
+    picbar.classList.toggle('closed', !opts.picOpen);
+    picToggle.setAttribute('aria-expanded', String(opts.picOpen));
+    picToggle.innerHTML = opts.picOpen ? '<span data-l="en">HIDE &#9650;</span><span data-l="de">BILD &#9650;</span>' : '<span data-l="en">PICTURE &#9660;</span><span data-l="de">BILD &#9660;</span>';
+    picCv.setAttribute('aria-label', game.rooms[st.loc].name[lang]);
+    if (!force && pic.key === picShown) return;
+    if (picFinish) picFinish();
+    picShown = pic.key;
+    const instant = !opts.picOpen || reduceMotion || opts.picMode === 'instant' || (opts.picMode === 'first' && picSeen.has(pic.key));
+    if (!picSeen.has(pic.key)) { picSeen.add(pic.key); savePicSeen(); }
+    picFinish = drawPic(picCv, compile(pic.build()), { instant, ms: 6000, weights: PACE });
+  }
+  picCv.addEventListener('click', () => picFinish && picFinish());
+  picToggle.addEventListener('click', () => { opts.picOpen = !opts.picOpen; saveOpts(); updatePic(true); });
+  io.restarted = () => { picSeen = new Set(); savePicSeen(); picShown = null; };
+  function setPics(on, announce) {
+    opts.pics = on; saveOpts(); applyOpts(); updatePic(true);
+    if (announce) io.print(on ? { en: '[Pictures on.]', de: '[Bilder an.]' } : { en: '[Pictures off.]', de: '[Bilder aus.]' }, 'sys');
+  }
+  document.getElementById('optPics').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setPics(b.dataset.v === 'on', false); });
+  document.getElementById('optPicMode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { opts.picMode = b.dataset.v; saveOpts(); applyOpts(); } });
+
   function send(c) {
     c = c.trim();
     if (!c) return;
@@ -1914,6 +2644,7 @@ if (typeof module !== 'undefined') module.exports = { createGame };
     batch = [];
     io.print({ en: c.toUpperCase(), de: c.toUpperCase() }, 'cmd');
     game.send(c);
+    updatePic();
     history.push(c); hi = history.length;
     if (log.children.length > 600) for (let k = 0; k < 100; k++) log.removeChild(log.firstChild);
     scroll();
@@ -1949,6 +2680,7 @@ if (typeof module !== 'undefined') module.exports = { createGame };
   setLang(lang);
   applyOpts();
   game.start();
+  updatePic();
   visitRoom(curRoom); saveMap();
   batch = [];
   // first-run note about the language switch
