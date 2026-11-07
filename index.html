@@ -255,6 +255,26 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
 .mapsvg .tag { fill: var(--sodium); font-family: var(--f-term); font-size: 16px; }
 .mapsvg .tag.open { fill: var(--frost); stroke: none; }
 .empty { color: var(--frost); font-size: 14px; }
+/* readable text option */
+.app.readable #log p:not(.room):not(.cmd):not(.title):not(.banner) { font-family: var(--f-doc); font-size: 16px; line-height: 1.62; }
+.app.readable #log p.flipped::before { font-family: var(--f-term); }
+/* orbit block bar */
+#orbitWrap { cursor: pointer; }
+.obar { display: inline-flex; gap: 2px; vertical-align: -1px; margin-left: 4px; }
+.obar i { display: block; width: 6px; height: 13px; background: currentColor; }
+.obar i.off { opacity: .22; }
+#orbitWrap .km { display: none; }
+#orbitWrap.showkm .km { display: inline; }
+#orbitWrap.showkm .obar { display: none; }
+#orbitWrap.alarmkm .km { display: inline; }
+#orbitWrap.alarmkm .obar { display: none; }
+/* orbit alarm: pixel frame like an old monitor */
+.app::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 6; border: 0 solid var(--klaxon); }
+.app.alarm::before { border-width: 4px; animation: klax 1.2s steps(1) infinite; }
+.app.alarm2::before { border-width: 6px; animation-duration: .5s; }
+.app.alarm .status { background: var(--klaxon); }
+@keyframes klax { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .app.alarm::before { animation: none; } }
 </style>
 </head>
 <body>
@@ -262,7 +282,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
 <div class="app">
   <header class="status" aria-live="off">
     <span class="where"><span id="room">Cryo Bay</span><span class="deck" id="deck">Deck C</span></span>
-    <span class="nums"><span class="lw" data-l="en">Score </span><span class="lw" data-l="de">Punkte </span><span id="score">0</span>/100 &nbsp; <span class="lw" data-l="en">Moves </span><span class="lw" data-l="de">Züge </span><span class="ls" data-l="en">M&#8239;</span><span class="ls" data-l="de">Z&#8239;</span><span id="moves">0</span><span id="orbitWrap" hidden> &nbsp; &#9660;<span id="alt">220</span> km</span></span>
+    <span class="nums"><span class="lw" data-l="en">Score </span><span class="lw" data-l="de">Punkte </span><span id="score">0</span>/100 &nbsp; <span class="lw" data-l="en">Moves </span><span class="lw" data-l="de">Züge </span><span class="ls" data-l="en">M&#8239;</span><span class="ls" data-l="de">Z&#8239;</span><span id="moves">0</span><span id="orbitWrap" hidden role="button" tabindex="0"> &nbsp;<span class="obar" id="obar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="km">&#9660;<span id="alt">220</span> km</span></span></span>
   </header>
   <nav class="tabs" role="tablist">
     <button role="tab" aria-selected="true" data-panel="play">TERMINAL</button>
@@ -282,7 +302,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <div class="tbtns"><button type="button" id="startBtn">START</button><button type="button" id="contBtn" hidden><span data-l="de">WEITER</span><span data-l="en">CONTINUE</span></button></div>
       <p class="cont-info" id="contInfo" hidden></p>
       <p class="press"><span data-l="de">Tippe auf START oder drücke Enter</span><span data-l="en">Tap START or press Enter</span></p>
-      <p class="credit"><span data-l="de">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</span><span data-l="en">Idea and concept: Kai Sonnet, 2026 · built with Claude</span><br>Release 14 · 261107</p>
+      <p class="credit"><span data-l="de">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</span><span data-l="en">Idea and concept: Kai Sonnet, 2026 · built with Claude</span><br>Release 15 · 261107</p>
     </div>
     <div id="picbar" hidden><canvas id="pic" width="256" height="120" aria-label="Location picture"></canvas><button type="button" id="picToggle" aria-expanded="true"><span data-l="en">HIDE &#9650;</span><span data-l="de">BILD &#9650;</span></button></div>
     <div id="logwrap" hidden><div id="log" aria-live="polite"></div></div>
@@ -341,6 +361,13 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
   <section class="panel" id="help" hidden>
     <div class="settings">
       <h2><span data-l="en">SETTINGS</span><span data-l="de">EINSTELLUNGEN</span></h2>
+      <div class="setrow">
+        <div class="what"><span data-l="en">Text font</span><span data-l="de">Schrift</span>
+          <small><span data-l="en">PIXEL is the classic terminal look. READABLE sets the story text in a calmer font; headings, commands and the status line stay pixel.</span><span data-l="de">PIXEL ist der klassische Terminal-Look. LESBAR setzt den Erzähltext in eine ruhigere Schrift; Überschriften, Befehle und Statuszeile bleiben Pixel.</span></small></div>
+        <div class="seg" id="optFont" role="group" aria-label="Font">
+          <button type="button" data-v="pixel">PIXEL</button><button type="button" data-v="readable"><span data-l="en">READABLE</span><span data-l="de">LESBAR</span></button>
+        </div>
+      </div>
       <div class="setrow">
         <div class="what"><span data-l="en">Orbit time pressure</span><span data-l="de">Orbit-Zeitdruck</span>
           <small><span data-l="en">The ship sinks a little with every move. Tight is for players who know the ship.</span><span data-l="de">Das Schiff sinkt mit jedem Zug ein Stück. Knapp ist für alle, die das Schiff schon kennen.</span></small></div>
@@ -408,7 +435,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Like the old Infocom SCRIPT command, the game records your whole session: every command and every reply. It is on by default and survives RESTART and closing the page. Under SETTINGS, COPY SCRIPT puts it on the clipboard in the language you are reading, ready to paste anywhere. The end of the copy holds a short status line for evaluation.</p>
       <p>To leave a note for later, start a line with an asterisk: <code>* door command not understood</code>. The note goes into the script at exactly that spot, costs no move, and the game ignores it.</p>
       <h3>HINTS AND TIME</h3>
-      <p>HINT works in three steps: first a nudge, then a pointer, and only the third time the solution. If the orbit setting is on, the altitude in the status bar drops with every move; check SETTINGS above to change the pace or switch it off, even mid-game.</p>
+      <p>HINT works in three steps: first a nudge, then a pointer, and only the third time the solution. If the orbit setting is on, the bar of eight blocks in the status line shrinks as the ship sinks; tap it to see the altitude in kilometres. Below 50 km a red frame flashes around the screen; check SETTINGS above to change the pace or switch it off, even mid-game.</p>
       <h3>TIPS</h3>
       <p>Read everything. The crew left notes, logs and recordings, and most puzzles are solved by something someone wrote down.</p>
       <p>Some rooms are pitch dark until main power is back. Bring a light.</p>
@@ -440,7 +467,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Wie der alte SCRIPT-Befehl bei Infocom zeichnet das Spiel deine ganze Sitzung auf: jeden Befehl und jede Antwort. Das Skript ist standardmäßig an und übersteht NEUSTART und das Schließen der Seite. Unter EINSTELLUNGEN legt SKRIPT KOPIEREN es in der Sprache, die du gerade liest, in die Zwischenablage, bereit zum Einfügen. Am Ende der Kopie steht eine kurze Statuszeile für die Auswertung.</p>
       <p>Für eine Notiz beginnst du die Zeile mit einem Sternchen: <code>* Tür-Befehl nicht verstanden</code>. Die Notiz landet genau an dieser Stelle im Skript, kostet keinen Zug, und das Spiel ignoriert sie.</p>
       <h3>TIPPS UND ZEIT</h3>
-      <p>TIPP hilft in drei Stufen: erst ein Anstoß, dann ein Fingerzeig, und erst beim dritten Mal die Lösung. Ist der Orbit-Zeitdruck an, sinkt die Höhe in der Statuszeile mit jedem Zug. Unter EINSTELLUNGEN oben änderst du das Tempo oder schaltest ihn ab, auch mitten im Spiel.</p>
+      <p>TIPP hilft in drei Stufen: erst ein Anstoß, dann ein Fingerzeig, und erst beim dritten Mal die Lösung. Ist der Orbit-Zeitdruck an, schrumpft der Balken aus acht Blöcken in der Statuszeile, während das Schiff sinkt. Antippen zeigt die Höhe in Kilometern. Unter 50 km blinkt ein roter Rahmen um den Bildschirm. Unter EINSTELLUNGEN oben änderst du das Tempo oder schaltest ihn ab, auch mitten im Spiel.</p>
       <h3>RATSCHLÄGE</h3>
       <p>Lies alles. Die Crew hat Notizen, Logbücher und Aufnahmen hinterlassen, und die meisten Rätsel löst etwas, das jemand aufgeschrieben hat.</p>
       <p>Manche Räume sind stockdunkel, bis der Hauptstrom zurück ist. Nimm Licht mit.</p>
@@ -1664,7 +1691,7 @@ function createGame(io) {
       say(L("THE EIGHTH SLEEPER", "DER ACHTE SCHLÄFER"), 'title');
       io.scene && io.scene('title');
       say(L("Idea and concept: Kai Sonnet, 2026 · built with Claude", "Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude"), 'sys');
-      say(L("An Interactive Science Fiction\nRelease 14 / Serial number 261107", "Eine interaktive Science-Fiction-Geschichte\nRelease 14 / Seriennummer 261107"), 'sys');
+      say(L("An Interactive Science Fiction\nRelease 15 / Serial number 261107", "Eine interaktive Science-Fiction-Geschichte\nRelease 15 / Seriennummer 261107"), 'sys');
     }
     say(L("Type HELP if you're stuck on how to play, HINT if you're stuck on what to do.", "Tippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
     say(L("Your pod's lid lifts with a hiss and a gust of frost. A recorded voice says, 'Battery failure. Emergency revival complete. Welcome back, Engineer Corrigan.' Nobody else says anything at all.\n\nYou climb out shivering. The deck is cold. The ship is quiet in the wrong way.",
@@ -2409,7 +2436,7 @@ function pictureFor(room, s) {
   try { lang = localStorage.getItem(LKEY) || ((navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en'); } catch (e) {}
   let batch = [], lastStatus = null;
   const OKEY = 'halcyon-drift-opts';
-  let opts = { orbit: 'normal', map: true, script: true, pics: true, picMode: 'first', picOpen: true };
+  let opts = { orbit: 'normal', map: true, script: true, pics: true, picMode: 'first', picOpen: true, font: 'pixel' };
   try { const o = JSON.parse(localStorage.getItem(OKEY) || 'null'); if (o) opts = Object.assign(opts, o); } catch (e) {}
   const other = l => (l === 'de' ? 'en' : 'de');
   function paint(p) {
@@ -2443,8 +2470,8 @@ function pictureFor(room, s) {
     const ids = ORDER.map((k, i) => (st.scored[k] ? i + 1 : null)).filter(Boolean).join(',');
     const now = new Date();
     const head = lang === 'de'
-      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 14 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
-      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 14 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
+      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 15 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
+      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 15 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
     const body = scriptLog.map(([c, en, de]) => {
       const txt = lang === 'de' && de !== undefined ? de : en;
       if (c === 'cmd') return '\n> ' + txt;
@@ -2480,11 +2507,30 @@ function pictureFor(room, s) {
       document.getElementById('moves').textContent = x.moves;
       document.getElementById('orbitWrap').hidden = !x.orbit;
       document.getElementById('alt').textContent = x.alt;
+      orbitUi(x);
     },
     save(n, d) { try { localStorage.setItem(KEY + '-' + n, d); localStorage.setItem(KEY + '-last', String(n)); return true; } catch (e) { return false; } },
     load(n) { try { return localStorage.getItem(KEY + '-' + n) || (n === 1 ? localStorage.getItem(KEY) : null); } catch (e) { return null; } },
     orbitLevel: () => opts.orbit,
   };
+  function orbitUi(x) {
+    const on = !!x.orbit && opts.orbit !== 'off';
+    const n = on ? Math.max(0, Math.min(8, Math.ceil(x.alt / 220 * 8))) : 8;
+    document.querySelectorAll('#obar i').forEach((b, i) => b.classList.toggle('off', i >= n));
+    const ow = document.getElementById('orbitWrap');
+    ow.setAttribute('aria-label', (lang === 'de' ? 'Orbithöhe ' : 'Orbital altitude ') + x.alt + ' km');
+    const app = document.querySelector('.app');
+    app.classList.toggle('alarm', on && x.alt <= 50);
+    app.classList.toggle('alarm2', on && x.alt <= 10);
+    ow.classList.toggle('alarmkm', on && x.alt <= 50);
+  }
+  {
+    const ow = document.getElementById('orbitWrap');
+    let kmT = null;
+    const showKm = () => { ow.classList.add('showkm'); clearTimeout(kmT); kmT = setTimeout(() => ow.classList.remove('showkm'), 3000); };
+    ow.addEventListener('click', showKm);
+    ow.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showKm(); } });
+  }
   function setLang(l) {
     lang = l;
     document.documentElement.lang = l;
@@ -2630,7 +2676,11 @@ function pictureFor(room, s) {
     document.querySelectorAll('#optPicMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === opts.picMode ? 'true' : 'false'));
     const st = game.state();
     document.getElementById('orbitWrap').hidden = opts.orbit === 'off' || !st || !!st.flags.won;
+    document.querySelectorAll('#optFont button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === opts.font ? 'true' : 'false'));
+    document.querySelector('.app').classList.toggle('readable', opts.font === 'readable');
+    if (lastStatus) orbitUi(lastStatus);
   }
+  document.getElementById('optFont').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { opts.font = b.dataset.v; saveOpts(); applyOpts(); } });
   function setOrbit(v, announce) {
     opts.orbit = v; saveOpts(); applyOpts();
     if (announce) io.print({ en: `[Orbit time pressure: ${ORBNAME[v].en}.]`, de: `[Orbit-Zeitdruck: ${ORBNAME[v].de}.]` }, 'sys');
