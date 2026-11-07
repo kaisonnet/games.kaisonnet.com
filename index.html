@@ -2,95 +2,17 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Spiele · Kai Sonnet</title>
-<meta name="description" content="Browser-Spiele von Kai Sonnet.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://kaisonnet.com/projekte/">
+<meta http-equiv="refresh" content="0; url=https://kaisonnet.com/projekte/">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<style>
-/* Lokale Schriften – keine externen Server */
-@font-face { font-family: 'Outfit'; src: url(assets/fonts/outfit.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: 'Figtree'; src: url(assets/fonts/figtree.woff2) format('woff2'); font-weight: 300 900; font-display: swap; }
-
-/* Farben wie kaisonnet.com: Anthrazit + Gold */
-:root {
-  --bg: #faf9f6; --surface: #ffffff; --text: #2b2d31; --muted: #5e6168;
-  --border: #e6e3dc; --accent: #8a6512; --accent-soft: #f6edd6; --accent-ink: #7a5a10;
-  --font: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --display: 'Outfit', 'Figtree', system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c1d20; --surface: #2b2d31; --text: #ecebe8; --muted: #a3a5ab;
-    --border: #383a3f; --accent: #d4a63f; --accent-soft: #3a3220; --accent-ink: #e2bc62;
-  }
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 1.0625rem/1.7 var(--font); -webkit-text-size-adjust: 100%; }
-a { color: var(--accent); text-underline-offset: 3px; }
-a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap { max-width: 42rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-header { border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; padding-top: env(safe-area-inset-top, 0px); }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.1rem; }
-.brand { display: inline-flex; align-items: center; gap: 0.6rem; font-family: var(--display); font-weight: 600; font-size: 1.1rem; color: var(--text); text-decoration: none; }
-.bar nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
-.bar nav a:hover { color: var(--accent); }
-h1 { font-family: var(--display); font-weight: 600; font-size: 2.25rem; line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 0.5rem; text-wrap: balance; }
-.lead { color: var(--muted); margin: 0 0 2rem; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1.25rem; }
-.card { display: flex; gap: 1rem; align-items: center; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
-.card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.card img { width: 4.5rem; height: 4.5rem; border-radius: 16px; flex: none; }
-.card div { min-width: 0; }
-.card h2 { font-family: var(--display); font-weight: 600; font-size: 1.15rem; margin: 0 0 0.2rem; }
-.card:hover h2 { color: var(--accent); }
-.card p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
-.tag { display: inline-block; margin-top: 0.4rem; font-size: 0.8rem; font-weight: 500; background: var(--accent-soft); color: var(--accent-ink); padding: 0.05rem 0.55rem; border-radius: 999px; }
-footer { border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 1.5rem; padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); font-size: 0.9rem; color: var(--muted); }
-footer .wrap { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-footer a { color: var(--muted); }
-@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
-</style>
+<!-- Die Übersicht der Spiele liegt auf kaisonnet.com/projekte. Normalerweise leitet _redirects schon vorher weiter; diese Seite ist nur die Rückfallebene. -->
+<script>location.replace('https://kaisonnet.com/projekte/');</script>
+<style>body{margin:0;padding:2rem 16px;font:1rem/1.6 system-ui,sans-serif;background:#faf9f6;color:#2b2d31}a{color:#8a6512}@media (prefers-color-scheme:dark){body{background:#1c1d20;color:#ecebe8}a{color:#d4a63f}}</style>
 </head>
 <body>
-<header>
-  <div class="wrap bar">
-    <a class="brand" href="https://kaisonnet.com/">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="47.99 57.96 256.01 264.04" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M72 70V117.08Q73.82 114.53 75.77 112.01Q98.12 83.25 136.05 61.58Q140.36 59.11 145.16 60.42Q149.95 61.73 152.42 66.05Q154.88 70.36 153.58 75.16Q152.27 79.95 147.95 82.42Q114.16 101.73 94.73 126.74Q73.3 154.3 72.07 186.11Q114.84 242.99 151.53 269.53Q190.9 298 232 298Q251.88 298 265.94 283.94Q280 269.88 280 250Q280 230.12 265.94 216.06Q251.88 202 232 202Q231.67 202 231.34 201.98Q205.82 200.57 186.9 183.39Q167.98 166.21 164.13 140.95Q160.27 115.69 173.21 93.64Q186.15 71.6 210.08 62.65Q234.02 53.7 258.25 61.84Q282.47 69.99 296.14 91.58Q298.8 95.78 297.71 100.63Q296.62 105.48 292.42 108.14Q288.22 110.8 283.37 109.71Q278.52 108.62 275.86 104.42Q266.75 90.02 250.6 84.59Q234.45 79.16 218.49 85.13Q202.53 91.1 193.91 105.79Q185.28 120.49 187.85 137.33Q190.42 154.17 203.04 165.63Q215.54 176.98 232.36 178Q261.95 178.13 282.91 199.09Q304 220.18 304 250Q304 279.82 282.91 300.91Q261.82 322 232 322Q183.13 322 137.47 288.97Q106.38 266.49 72 224.83V310Q72 314.97 68.49 318.49Q64.97 322 60 322Q55.03 322 51.51 318.49Q48 314.97 48 310V190.73Q47.97 190.15 48 189.56V70Q48 65.03 51.51 61.51Q55.03 58 60 58Q64.97 58 68.49 61.51Q72 65.03 72 70Z" /></svg>
-      <span>Kai Sonnet</span>
-    </a>
-    <nav><a href="https://kaisonnet.com/">Zur Hauptseite</a></nav>
-  </div>
-</header>
-<main class="wrap">
-  <h1>Spiele</h1>
-  <p class="lead">Kleine Spiele, die direkt im Browser laufen – auch auf dem Handy.</p>
-  <div class="grid">
-    <!-- Neues Spiel: Ordner anlegen und hier eine weitere Karte einfügen -->
-    <a class="card" href="der-achte-schlaefer/">
-      <img src="der-achte-schlaefer/icon-192.png" alt="" width="72" height="72">
-      <div>
-        <h2>Der achte Schläfer</h2>
-        <p>Science-Fiction-Textadventure im Stil der 1980er, auf Deutsch und Englisch.</p>
-        <span class="tag">Textadventure</span>
-      </div>
-    </a>
-    <a class="card" href="sternwacht/">
-      <img src="sternwacht/icon-192.png" alt="" width="72" height="72">
-      <div>
-        <h2>Sternwacht</h2>
-        <p>Retro-Weltraum-Shooter fürs Handy, mit Power-ups und Mutterschiff.</p>
-        <span class="tag">Arcade</span>
-      </div>
-    </a>
-  </div>
-</main>
-<footer>
-  <div class="wrap">
-    <span>© Kai Sonnet</span>
-    <a href="https://kaisonnet.com/impressum">Impressum</a>
-    <a href="https://kaisonnet.com/datenschutz">Datenschutz</a>
-  </div>
-</footer>
+<p>Die Spiele findest du jetzt unter <a href="https://kaisonnet.com/projekte/">kaisonnet.com/projekte</a>.</p>
 </body>
 </html>
