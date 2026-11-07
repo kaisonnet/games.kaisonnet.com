@@ -97,6 +97,7 @@ nav.tabs button:focus-visible, .keys button:focus-visible { outline: 2px solid v
 #titlescreen .cont-info { margin: -6px 0 0; color: var(--frost); font-size: 18px; letter-spacing: .04em; }
 #startBtn:focus-visible { outline: 2px solid var(--ice); outline-offset: 3px; }
 #titlescreen .credit { margin: 0; color: var(--frost); font-family: var(--f-doc); font-size: 12px; line-height: 1.6; }
+#titlescreen .credit a, .doc .foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 @keyframes blink { 50% { opacity: .35; } }
 #titlescreen .press { margin: 0; color: var(--frost); font-size: 18px; animation: blink 1.6s steps(1) infinite; }
 @media (max-width: 480px) { #titlescreen h1 { font-size: 38px; letter-spacing: .08em; } #startBtn, #contBtn { font-size: 26px; } }
@@ -302,7 +303,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <div class="tbtns"><button type="button" id="startBtn">START</button><button type="button" id="contBtn" hidden><span data-l="de">WEITER</span><span data-l="en">CONTINUE</span></button></div>
       <p class="cont-info" id="contInfo" hidden></p>
       <p class="press"><span data-l="de">Tippe auf START oder drücke Enter</span><span data-l="en">Tap START or press Enter</span></p>
-      <p class="credit"><span data-l="de">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</span><span data-l="en">Idea and concept: Kai Sonnet, 2026 · built with Claude</span><br>Release 15 · 261107</p>
+      <p class="credit"><span data-l="de">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</span><span data-l="en">Idea and concept: Kai Sonnet, 2026 · built with Claude</span><br>Release 15 · 261107<br><span data-l="de"><a href="https://kaisonnet.com/impressum" target="_blank" rel="noopener">Impressum</a> · <a href="https://kaisonnet.com/datenschutz" target="_blank" rel="noopener">Datenschutz</a></span><span data-l="en"><a href="https://kaisonnet.com/impressum" target="_blank" rel="noopener">Legal notice</a> · <a href="https://kaisonnet.com/datenschutz" target="_blank" rel="noopener">Privacy</a></span></p>
     </div>
     <div id="picbar" hidden><canvas id="pic" width="256" height="120" aria-label="Location picture"></canvas><button type="button" id="picToggle" aria-expanded="true"><span data-l="en">HIDE &#9650;</span><span data-l="de">BILD &#9650;</span></button></div>
     <div id="logwrap" hidden><div id="log" aria-live="polite"></div></div>
@@ -441,7 +442,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Some rooms are pitch dark until main power is back. Bring a light.</p>
       <p>You can die. If you do, <code>UNDO</code> takes back your last move. <code>SAVE</code> keeps one save game in this browser.</p>
       <p>Press the up arrow in the command line to repeat earlier commands. On a phone, the buttons under the command line send the common ones for you.</p>
-      <p class="foot">Idea and concept: Kai Sonnet, 2026 · built with Claude</p>
+      <p class="foot">Idea and concept: Kai Sonnet, 2026 · built with Claude · <a href="https://kaisonnet.com/impressum" target="_blank" rel="noopener">Legal notice</a> · <a href="https://kaisonnet.com/datenschutz" target="_blank" rel="noopener">Privacy</a></p>
     </div>
     <div class="doc" data-l="de">
       <h2>HANDBUCH</h2>
@@ -473,7 +474,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
       <p>Manche Räume sind stockdunkel, bis der Hauptstrom zurück ist. Nimm Licht mit.</p>
       <p>Du kannst sterben. Dann nimmt <code>ZURÜCK</code> deinen letzten Zug zurück. <code>SPEICHERN</code> hält einen Spielstand in diesem Browser fest.</p>
       <p>Mit der Pfeiltaste nach oben holst du frühere Befehle zurück. Am Handy schicken die Tasten unter der Befehlszeile die häufigsten Befehle für dich ab.</p>
-      <p class="foot">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</p>
+      <p class="foot">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude · <a href="https://kaisonnet.com/impressum" target="_blank" rel="noopener">Impressum</a> · <a href="https://kaisonnet.com/datenschutz" target="_blank" rel="noopener">Datenschutz</a></p>
     </div>
   </section>
 
