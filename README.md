@@ -1,6 +1,6 @@
 # games.kaisonnet.com
 
-Browser-Spiele von Kai Sonnet. Jedes Spiel liegt in einem eigenen Ordner.
+Browser-Spiele und Web-Apps von Kai Sonnet. Jedes Spiel liegt in einem eigenen Ordner.
 
 Die Übersicht der Spiele steht auf [kaisonnet.com/projekte](https://kaisonnet.com/projekte/). Die Startseite dieser Subdomain leitet dorthin weiter (`_redirects`, dazu `index.html` als Rückfallebene).
 
@@ -8,6 +8,7 @@ Die Übersicht der Spiele steht auf [kaisonnet.com/projekte](https://kaisonnet.c
 |---|---|
 | `der-achte-schlaefer/` | Der achte Schläfer – Sci-Fi-Textadventure (DE/EN) |
 | `sternwacht/` | Sternwacht – Retro-Weltraum-Shooter fürs Handy |
+| `working-hours/` | Working Hours – Arbeitszeitkonto im Browser (Web-App) |
 
 **Neues Spiel hinzufügen:**
 
