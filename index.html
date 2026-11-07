@@ -83,6 +83,19 @@ nav.tabs button:focus-visible, .keys button:focus-visible { outline: 2px solid v
 .panel { flex: 1; min-height: 0; overflow-y: auto; }
 #play { display: flex; flex-direction: column; overflow: hidden; }
 #logwrap { flex: 1; min-height: 0; overflow-y: auto; }
+[hidden] { display: none !important; }
+#titlescreen { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-block: 18px 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#titlescreen h1 { margin: 0; font-family: var(--f-term); font-weight: 400; font-size: 54px; line-height: 1; letter-spacing: .14em; color: var(--ice); text-shadow: 0 0 18px rgba(201,220,236,.25); text-wrap: balance; }
+#titlescreen .sub { margin: 0; color: var(--frost); font-size: 20px; letter-spacing: .06em; }
+#titlepic { display: block; width: 100%; max-width: 560px; aspect-ratio: 256 / 120; image-rendering: pixelated; image-rendering: crisp-edges; background: #000; border: 1px solid var(--line); cursor: pointer; }
+#startBtn { font-family: var(--f-term); font-size: 30px; letter-spacing: .3em; padding: 6px 28px 6px 36px; background: var(--sodium); color: var(--void); border: 0; cursor: pointer; }
+#startBtn:hover { filter: brightness(1.08); }
+#startBtn:focus-visible { outline: 2px solid var(--ice); outline-offset: 3px; }
+#titlescreen .credit { margin: 0; color: var(--frost); font-family: var(--f-doc); font-size: 12px; line-height: 1.6; }
+@keyframes blink { 50% { opacity: .35; } }
+#titlescreen .press { margin: 0; color: var(--frost); font-size: 18px; animation: blink 1.6s steps(1) infinite; }
+@media (max-width: 480px) { #titlescreen h1 { font-size: 38px; letter-spacing: .08em; } #startBtn { font-size: 26px; } }
+@media (prefers-reduced-motion: reduce) { #titlescreen .press { animation: none; } }
 #picbar { flex: none; position: relative; background: #000; border-bottom: 1px solid var(--line); padding-block: 6px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 #picbar canvas { display: block; margin: 0 auto; width: 100%; max-width: calc(34vh * 256 / 120); aspect-ratio: 256 / 120; image-rendering: pixelated; image-rendering: crisp-edges; cursor: pointer; }
 #picbar.closed canvas { display: none; }
@@ -258,8 +271,16 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
   </nav>
 
   <main class="panel" id="play">
+    <div id="titlescreen">
+      <h1><span data-l="de">DER ACHTE SCHLÄFER</span><span data-l="en">THE EIGHTH SLEEPER</span></h1>
+      <p class="sub"><span data-l="de">Eine interaktive Science-Fiction-Geschichte</span><span data-l="en">An Interactive Science Fiction</span></p>
+      <canvas id="titlepic" width="256" height="120" role="img" aria-label="Halcyon"></canvas>
+      <button type="button" id="startBtn">START</button>
+      <p class="press"><span data-l="de">Tippe auf START oder drücke Enter</span><span data-l="en">Tap START or press Enter</span></p>
+      <p class="credit"><span data-l="de">Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude</span><span data-l="en">Idea and concept: Kai Sonnet, 2026 · built with Claude</span><br>Release 13 · 261107</p>
+    </div>
     <div id="picbar" hidden><canvas id="pic" width="256" height="120" aria-label="Location picture"></canvas><button type="button" id="picToggle" aria-expanded="true"><span data-l="en">HIDE &#9650;</span><span data-l="de">BILD &#9650;</span></button></div>
-    <div id="logwrap"><div id="log" aria-live="polite"></div></div>
+    <div id="logwrap" hidden><div id="log" aria-live="polite"></div></div>
   </main>
 
   <section class="panel" id="map" hidden>
@@ -424,7 +445,7 @@ html[lang="de"] [data-l="en"], html[lang="en"] [data-l="de"] { display: none !im
     </div>
   </section>
 
-  <div class="cmdline">
+  <div class="cmdline" hidden>
     <form class="prompt" id="f" autocomplete="off">
       <label for="cmd">&gt;</label>
       <input id="cmd" name="cmd" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" placeholder="What do you do?">
@@ -1629,15 +1650,18 @@ function createGame(io) {
     describe();
   }
 
-  function start(restart) {
+  function start(restart, quiet) {
     s = fresh(); undo = [];
     if (restart && io.restarted) io.restarted();
     if (restart) say(L("[Restarting.]", "[Neustart.]"), 'sys');
-    say(L("THE EIGHTH SLEEPER", "DER ACHTE SCHLÄFER"), 'title');
-    io.scene && io.scene('title');
-    say(L("Idea and concept: Kai Sonnet, 2026 · built with Claude", "Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude"), 'sys');
-    say(L("An Interactive Science Fiction\nRelease 12 / Serial number 261105\nType HELP if you're stuck on how to play, HINT if you're stuck on what to do.",
-          "Eine interaktive Science-Fiction-Geschichte\nRelease 12 / Seriennummer 261105\nTippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
+    if (!quiet) {
+      // on the very first start the page shows its own title screen, so the log skips the title block
+      say(L("THE EIGHTH SLEEPER", "DER ACHTE SCHLÄFER"), 'title');
+      io.scene && io.scene('title');
+      say(L("Idea and concept: Kai Sonnet, 2026 · built with Claude", "Idee und Konzept: Kai Sonnet, 2026 · umgesetzt mit Claude"), 'sys');
+      say(L("An Interactive Science Fiction\nRelease 13 / Serial number 261107", "Eine interaktive Science-Fiction-Geschichte\nRelease 13 / Seriennummer 261107"), 'sys');
+    }
+    say(L("Type HELP if you're stuck on how to play, HINT if you're stuck on what to do.", "Tippe HILFE, wenn du nicht weißt, wie man spielt, und TIPP, wenn du nicht weißt, was zu tun ist."), 'sys');
     say(L("Your pod's lid lifts with a hiss and a gust of frost. A recorded voice says, 'Battery failure. Emergency revival complete. Welcome back, Engineer Corrigan.' Nobody else says anything at all.\n\nYou climb out shivering. The deck is cold. The ship is quiet in the wrong way.",
           "Der Deckel deiner Kapsel hebt sich mit einem Zischen und einem Schwall Frost. Eine aufgezeichnete Stimme sagt: „Batterieausfall. Notfallerweckung abgeschlossen. Willkommen zurück, Ingenieur Corrigan.“ Sonst sagt niemand etwas.\n\nZitternd kletterst du heraus. Der Boden ist kalt. Das Schiff ist auf die falsche Art still."));
     describe();
@@ -1645,7 +1669,7 @@ function createGame(io) {
   }
 
   return {
-    start: () => start(false),
+    start: o => start(false, !!(o && o.quiet)),
     send: cmd => {
       const segs = String(cmd).split(/(?<!\d)[.,;](?!\d)|\s+(?:und|and|then|dann)\s+/i).map(x => x.trim()).filter(Boolean);
       let prevVerb = null, r;
@@ -2413,8 +2437,8 @@ function pictureFor(room, s) {
     const ids = ORDER.map((k, i) => (st.scored[k] ? i + 1 : null)).filter(Boolean).join(',');
     const now = new Date();
     const head = lang === 'de'
-      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 12 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
-      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 12 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
+      ? ['DER ACHTE SCHLÄFER - SKRIPT', `Release 13 · exportiert am ${now.toLocaleString('de-DE')}`, `Orbit: ${ORBNAME[opts.orbit].de} · Karte: ${opts.map ? 'an' : 'aus'}`, `Aktueller Stand: ${R2[st.loc].name.de}, ${st.score}/100 Punkte, ${st.moves} ${st.moves === 1 ? 'Zug' : 'Züge'}`, '----------------------------------------']
+      : ['THE EIGHTH SLEEPER - SCRIPT', `Release 13 · exported ${now.toLocaleString('en-GB')}`, `Orbit: ${ORBNAME[opts.orbit].en} · Map: ${opts.map ? 'on' : 'off'}`, `Current state: ${R2[st.loc].name.en}, ${st.score}/100 points, ${st.moves} ${st.moves === 1 ? 'move' : 'moves'}`, '----------------------------------------'];
     const body = scriptLog.map(([c, en, de]) => {
       const txt = lang === 'de' && de !== undefined ? de : en;
       if (c === 'cmd') return '\n> ' + txt;
@@ -2641,6 +2665,7 @@ function pictureFor(room, s) {
     box._room = el.dataset.room;
   });
   // ------------------------------------------------ location pictures
+  let started = false;
   const PKEY = 'halcyon-drift-pics-seen';
   const picbar = document.getElementById('picbar'), picCv = document.getElementById('pic'), picToggle = document.getElementById('picToggle');
   let picSeen = new Set(), picShown = null, picFinish = null;
@@ -2652,6 +2677,7 @@ function pictureFor(room, s) {
     return { power: f.power, lit: game.lit(), ejected: f.ejected, sensor: f.sensor, coolant: f.coolant, innerOpen: f.innerOpen, keyIn: f.keyIn, won: f.won };
   }
   function updatePic(force) {
+    if (!started) { picbar.hidden = true; return; }
     const st = game.state();
     const pic = opts.pics && st ? pictureFor(st.loc, picState()) : null;
     if (!pic) { if (picFinish) picFinish(); picbar.hidden = true; picShown = null; return; }
@@ -2725,7 +2751,7 @@ function pictureFor(room, s) {
   document.querySelectorAll('nav.tabs button[role="tab"]').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('nav.tabs button[role="tab"]').forEach(x => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
     ['play', 'map', 'dossier', 'help'].forEach(id => { document.getElementById(id).hidden = id !== b.dataset.panel; });
-    document.querySelector('.cmdline').hidden = b.dataset.panel !== 'play';
+    document.querySelector('.cmdline').hidden = b.dataset.panel !== 'play' || !started;
     if (b.dataset.panel === 'map') renderMap(); else document.getElementById('confirm').hidden = true;
     if (b.dataset.panel === 'help') applyOpts();
   }));
@@ -2743,14 +2769,37 @@ function pictureFor(room, s) {
   });
   setLang(lang);
   applyOpts();
-  game.start();
-  updatePic();
+  game.start({ quiet: true });
   visitRoom(curRoom); saveMap();
   batch = [];
   // first-run note about the language switch
   io.print({ en: 'Tip: switch between DE and EN at any time (top right). Tap any passage to see it in the other language.', de: 'Tipp: Oben rechts wechselst du jederzeit zwischen DE und EN. Tippe einen Absatz an, um ihn in der anderen Sprache zu sehen.' }, 'sys');
   batch = [];
-  if (window.matchMedia('(min-width: 700px)').matches) input.focus();
+
+  // ------------------------------------------------ title screen
+  const ts = document.getElementById('titlescreen'), tpic = document.getElementById('titlepic'), startBtn = document.getElementById('startBtn');
+  let titleFinish = null;
+  if (opts.pics) {
+    const key = 'scene:title';
+    const instant = reduceMotion || opts.picMode === 'instant' || (opts.picMode === 'first' && picSeen.has(key));
+    if (!picSeen.has(key)) { picSeen.add(key); savePicSeen(); }
+    titleFinish = drawPic(tpic, compile(PICS.title({})), { instant, ms: 6000, weights: PACE });
+    tpic.addEventListener('click', () => titleFinish && titleFinish());
+  } else tpic.hidden = true;
+  function begin() {
+    if (started) return;
+    started = true;
+    if (titleFinish) titleFinish();
+    ts.hidden = true;
+    document.getElementById('logwrap').hidden = false;
+    document.querySelector('.cmdline').hidden = document.getElementById('play').hidden;
+    updatePic();
+    play.scrollTop = 0;
+    if (window.matchMedia('(min-width: 700px)').matches) input.focus();
+  }
+  startBtn.addEventListener('click', begin);
+  document.addEventListener('keydown', e => { if (!started && e.key === 'Enter' && !document.getElementById('play').hidden && !(e.target.closest && e.target.closest('button, input'))) { e.preventDefault(); begin(); } });
+  startBtn.focus({ preventScroll: true });
 })();
 </script>
 
