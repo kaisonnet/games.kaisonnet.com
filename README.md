@@ -1,17 +1,12 @@
 # games.kaisonnet.com
 
-Browser-Spiele von Kai Sonnet. Jedes Spiel liegt in einem eigenen Ordner.
+**Umgezogen.** Die Spiele und Web-Apps liegen jetzt im Repo `kaisonnet.com` unter `public/apps/` und sind unter `https://kaisonnet.com/apps/<name>/` erreichbar.
 
-Die Übersicht der Spiele steht auf [kaisonnet.com/projekte](https://kaisonnet.com/projekte/). Die Startseite dieser Subdomain leitet dorthin weiter (`_redirects`, dazu `index.html` als Rückfallebene).
+Dieses Repo leitet nur noch alte Adressen weiter:
 
-| Ordner | Spiel |
-|---|---|
-| `der-achte-schlaefer/` | Der achte Schläfer – Sci-Fi-Textadventure (DE/EN) |
-| `sternwacht/` | Sternwacht – Retro-Weltraum-Shooter fürs Handy |
+- `_redirects`: 301-Weiterleitungen der alten Seiten auf die neuen Adressen.
+- `sternwacht/sw.js`, `der-achte-schlaefer/sw.js`: Aufräum-Worker für installierte Spiele. Sie öffnen die neue Adresse, löschen die alte Offline-Kopie und melden sich ab.
+- `sw.js` im Hauptordner: älterer Aufräum-Worker, ebenfalls behalten.
+- `index.html` (auch in den Spiele-Ordnern): Rückfallebene, falls `_redirects` nicht greift.
 
-**Neues Spiel hinzufügen:**
-
-1. Ordner anlegen und das Spiel hineinkopieren (alle Pfade relativ).
-2. Auf kaisonnet.com im Pages CMS ein neues Projekt anlegen: Bild, Kurzbeschreibung und als Link `https://games.kaisonnet.com/<ordner>/`.
-
-`sw.js` im Hauptordner ist nur ein Aufräum-Worker für die Zeit, als das Spiel noch hier lag – nicht löschen.
+Wenn nach einigen Wochen keine Zugriffe mehr kommen, kann das Cloudflare-Projekt samt Repo gelöscht werden.
