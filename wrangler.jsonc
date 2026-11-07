@@ -1,0 +1,8 @@
+// Cloudflare-Konfiguration: liefert die Dateien dieses Repos direkt aus (kein Build nötig)
+{
+  "name": "kaisonnet-games",
+  "compatibility_date": "2025-10-01",
+  "assets": {
+    "directory": "./"
+  }
+}
